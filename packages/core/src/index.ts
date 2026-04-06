@@ -25,3 +25,6 @@ export type {
   BaseSlots,
   BaseClassNames,
 } from './types'
+
+export { StackFormContext, useStackFormContext } from './context'
+export type { StackFormContextValue } from './context'
