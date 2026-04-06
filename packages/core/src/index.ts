@@ -38,3 +38,10 @@ export {
 } from './utils'
 
 export { useField, useFieldValue } from './hooks'
+
+export { TextField } from './components'
+export type {
+  TextFieldProps,
+  TextFieldSlots,
+  TextFieldClassNames,
+} from './components'

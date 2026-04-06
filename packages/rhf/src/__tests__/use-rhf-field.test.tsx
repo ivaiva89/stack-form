@@ -82,7 +82,10 @@ describe('useRHFField', () => {
         register('email', { required: 'Email is required' })
       }, [register])
 
-      const field = useRHFField<string>(form.control, 'email')
+      const field = useRHFField<string>(
+        form.control as unknown as UseFormReturn<FieldValues>['control'],
+        'email'
+      )
 
       return (
         <RHFFormProvider form={form}>
