@@ -36,3 +36,5 @@ export {
   toFieldId,
   toDescribedBy,
 } from './utils'
+
+export { useField, useFieldValue } from './hooks'
