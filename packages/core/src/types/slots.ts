@@ -8,6 +8,8 @@ import type {
 export interface WrapperSlotProps {
   className?: string
   children: React.ReactNode
+  error?: boolean
+  disabled?: boolean
 }
 
 export interface LabelSlotProps {
@@ -27,6 +29,7 @@ export interface HintSlotProps {
   id: string
   children: React.ReactNode
   className?: string
+  hasError?: boolean
 }
 
 export interface PrefixSlotProps {
