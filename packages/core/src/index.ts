@@ -39,9 +39,13 @@ export {
 
 export { useField, useFieldValue } from './hooks'
 
-export { TextField } from './components'
+export { TextField, SelectField } from './components'
 export type {
   TextFieldProps,
   TextFieldSlots,
   TextFieldClassNames,
+  SelectFieldProps,
+  SelectFieldSlots,
+  SelectFieldClassNames,
+  SelectOption,
 } from './components'
