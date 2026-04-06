@@ -28,3 +28,11 @@ export type {
 
 export { StackFormContext, useStackFormContext } from './context'
 export type { StackFormContextValue } from './context'
+
+export {
+  resolveSlots,
+  resolveSlotProps,
+  resolveClassNames,
+  toFieldId,
+  toDescribedBy,
+} from './utils'
