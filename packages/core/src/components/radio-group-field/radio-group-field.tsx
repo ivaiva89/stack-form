@@ -5,7 +5,8 @@ import type {
   BaseClassNames,
   RadioOptionSlotProps,
 } from '../../types'
-import { useField } from '../../hooks'
+import type { ValidateFn } from '../../hooks'
+import { useField, useValidate } from '../../hooks'
 import { useStackFormContext } from '../../context'
 import {
   resolveSlots,
@@ -42,7 +43,7 @@ export interface RadioGroupFieldProps<T = string> extends BaseFieldProps<T> {
     Partial<{
       option: Partial<RadioOptionSlotProps>
     }>
-  validate?: (value: T) => string | undefined
+  validate?: ValidateFn<T>
 }
 
 export function RadioGroupField<T = string>({
@@ -58,7 +59,7 @@ export function RadioGroupField<T = string>({
   slots,
   slotProps,
   onValueChange,
-  validate: _validate,
+  validate,
 }: RadioGroupFieldProps<T>): ReactNode {
   const ctx = useStackFormContext()
   const field = useField<T>(name, { label })
@@ -66,13 +67,20 @@ export function RadioGroupField<T = string>({
   const isDisabled = disabledProp ?? ctx.formState.disabled ?? field.disabled
 
   const id = toFieldId(name, formId)
-  const hasError = !!field.error
+  const { validationError, isValidating, runValidation } = useValidate(validate)
+  const displayError = field.error ?? validationError
+  const hasError = !!displayError
   const hasHint = !!hint
   const describedBy = toDescribedBy(id, { hasError, hasHint }) || undefined
 
   const handleChange = (value: T): void => {
     field.onChange(value)
     onValueChange?.(value)
+  }
+
+  const handleBlur = (): void => {
+    field.onBlur()
+    runValidation(field.value)
   }
 
   type SlotRecord = Record<string, React.ComponentType<never> | undefined>
@@ -150,7 +158,7 @@ export function RadioGroupField<T = string>({
             value={optValue}
             checked={isSelected}
             onChange={() => handleChange(opt.value)}
-            onBlur={field.onBlur}
+            onBlur={handleBlur}
             disabled={isOptDisabled}
             role="radio"
             aria-checked={isSelected}
@@ -169,11 +177,17 @@ export function RadioGroupField<T = string>({
     })
   )
 
+  const validatingIndicator = isValidating ? (
+    <span aria-live="polite" role="status">
+      Validating…
+    </span>
+  ) : null
+
   const errorElement = hasError ? (
     ErrorSlot ? (
       <ErrorSlot
         id={`${id}-error`}
-        message={field.error!}
+        message={displayError!}
         className={resolvedClassNames.error}
         {...(resolvedSlotProps.error as
           | Partial<import('../../types').ErrorSlotProps>
@@ -185,7 +199,7 @@ export function RadioGroupField<T = string>({
         className={resolvedClassNames.error}
         role="alert"
       >
-        {field.error}
+        {displayError}
       </span>
     )
   ) : null
@@ -223,6 +237,7 @@ export function RadioGroupField<T = string>({
     >
       {labelElement}
       {optionsElement}
+      {validatingIndicator}
       {errorElement ?? hintElement}
     </fieldset>
   )

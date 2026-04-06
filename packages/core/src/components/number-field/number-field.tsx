@@ -6,7 +6,8 @@ import type {
   NumberInputSlotProps,
   StepperButtonSlotProps,
 } from '../../types'
-import { useField } from '../../hooks'
+import type { ValidateFn } from '../../hooks'
+import { useField, useValidate } from '../../hooks'
 import { useStackFormContext } from '../../context'
 import {
   resolveSlots,
@@ -42,7 +43,7 @@ export interface NumberFieldProps extends BaseFieldProps<number> {
       stepperIncrement: Partial<StepperButtonSlotProps>
       stepperDecrement: Partial<StepperButtonSlotProps>
     }>
-  validate?: (value: number) => string | undefined
+  validate?: ValidateFn<number>
 }
 
 export function NumberField({
@@ -62,7 +63,7 @@ export function NumberField({
   slots,
   slotProps,
   onValueChange,
-  validate: _validate,
+  validate,
 }: NumberFieldProps): ReactNode {
   const ctx = useStackFormContext()
   const field = useField<number>(name, { label })
@@ -70,7 +71,9 @@ export function NumberField({
   const isDisabled = disabledProp ?? ctx.formState.disabled ?? field.disabled
 
   const id = toFieldId(name, formId)
-  const hasError = !!field.error
+  const { validationError, isValidating, runValidation } = useValidate(validate)
+  const displayError = field.error ?? validationError
+  const hasError = !!displayError
   const hasHint = !!hint
   const describedBy = toDescribedBy(id, { hasError, hasHint }) || undefined
 
@@ -79,6 +82,11 @@ export function NumberField({
   const handleChange = (value: number): void => {
     field.onChange(value)
     onValueChange?.(value)
+  }
+
+  const handleBlur = (): void => {
+    field.onBlur()
+    runValidation(field.value)
   }
 
   const handleIncrement = (): void => {
@@ -131,7 +139,7 @@ export function NumberField({
       name={name}
       value={numericValue}
       onChange={handleChange}
-      onBlur={field.onBlur}
+      onBlur={handleBlur}
       disabled={isDisabled}
       placeholder={placeholder}
       min={min}
@@ -155,7 +163,7 @@ export function NumberField({
         const parsed = parseFloat(e.target.value)
         handleChange(Number.isNaN(parsed) ? 0 : parsed)
       }}
-      onBlur={field.onBlur}
+      onBlur={handleBlur}
       disabled={isDisabled}
       placeholder={placeholder}
       min={min}
@@ -237,11 +245,17 @@ export function NumberField({
       )
     ) : null
 
+  const validatingIndicator = isValidating ? (
+    <span aria-live="polite" role="status">
+      Validating…
+    </span>
+  ) : null
+
   const errorElement = hasError ? (
     ErrorSlot ? (
       <ErrorSlot
         id={`${id}-error`}
-        message={field.error!}
+        message={displayError!}
         className={resolvedClassNames.error}
         {...(resolvedSlotProps.error as
           | Partial<import('../../types').ErrorSlotProps>
@@ -253,7 +267,7 @@ export function NumberField({
         className={resolvedClassNames.error}
         role="alert"
       >
-        {field.error}
+        {displayError}
       </span>
     )
   ) : null
@@ -282,6 +296,7 @@ export function NumberField({
       {labelElement}
       {inputElement}
       {stepperElement}
+      {validatingIndicator}
       {errorElement ?? hintElement}
     </>
   )

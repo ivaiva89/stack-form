@@ -12,6 +12,7 @@ export type {
   SuffixSlotProps,
   CounterSlotProps,
   TextInputSlotProps,
+  TextareaSlotProps,
   NumberInputSlotProps,
   SelectTriggerSlotProps,
   SelectOptionSlotProps,
@@ -38,7 +39,8 @@ export {
   toDescribedBy,
 } from './utils'
 
-export { useField, useFieldValue } from './hooks'
+export { useField, useFieldValue, useValidate } from './hooks'
+export type { ValidateFn } from './hooks'
 
 export {
   TextField,
@@ -47,6 +49,7 @@ export {
   SwitchField,
   RadioGroupField,
   NumberField,
+  TextareaField,
 } from './components'
 export type {
   TextFieldProps,
@@ -69,4 +72,7 @@ export type {
   NumberFieldProps,
   NumberFieldSlots,
   NumberFieldClassNames,
+  TextareaFieldProps,
+  TextareaFieldSlots,
+  TextareaFieldClassNames,
 } from './components'

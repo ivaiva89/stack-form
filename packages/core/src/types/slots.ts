@@ -1,6 +1,7 @@
 import type {
   ComponentType,
   InputHTMLAttributes,
+  TextareaHTMLAttributes,
   ButtonHTMLAttributes,
 } from 'react'
 
@@ -46,6 +47,19 @@ export interface CounterSlotProps {
 
 export interface TextInputSlotProps extends Omit<
   InputHTMLAttributes<HTMLInputElement>,
+  'onChange'
+> {
+  id: string
+  name: string
+  value: string
+  onChange: (value: string) => void
+  onBlur: () => void
+  'aria-describedby'?: string
+  'aria-invalid'?: boolean
+}
+
+export interface TextareaSlotProps extends Omit<
+  TextareaHTMLAttributes<HTMLTextAreaElement>,
   'onChange'
 > {
   id: string
@@ -145,6 +159,7 @@ export interface SlotComponentMap {
   Suffix: ComponentType<SuffixSlotProps>
   Counter: ComponentType<CounterSlotProps>
   TextInput: ComponentType<TextInputSlotProps>
+  Textarea: ComponentType<TextareaSlotProps>
   NumberInput: ComponentType<NumberInputSlotProps>
   SelectTrigger: ComponentType<SelectTriggerSlotProps>
   SelectOption: ComponentType<SelectOptionSlotProps>

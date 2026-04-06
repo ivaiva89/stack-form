@@ -6,7 +6,8 @@ import type {
   BaseClassNames,
   CheckboxSlotProps,
 } from '../../types'
-import { useField } from '../../hooks'
+import type { ValidateFn } from '../../hooks'
+import { useField, useValidate } from '../../hooks'
 import { useStackFormContext } from '../../context'
 import {
   resolveSlots,
@@ -31,7 +32,7 @@ export interface CheckboxFieldProps extends BaseFieldProps<boolean> {
     Partial<{
       input: Partial<CheckboxSlotProps>
     }>
-  validate?: (value: boolean) => string | undefined
+  validate?: ValidateFn<boolean>
 }
 
 export function CheckboxField({
@@ -47,7 +48,7 @@ export function CheckboxField({
   slots,
   slotProps,
   onValueChange,
-  validate: _validate,
+  validate,
 }: CheckboxFieldProps): ReactNode {
   const ctx = useStackFormContext()
   const field = useField<boolean>(name, { label })
@@ -55,7 +56,9 @@ export function CheckboxField({
   const isDisabled = disabledProp ?? ctx.formState.disabled ?? field.disabled
 
   const id = toFieldId(name, formId)
-  const hasError = !!field.error
+  const { validationError, isValidating, runValidation } = useValidate(validate)
+  const displayError = field.error ?? validationError
+  const hasError = !!displayError
   const hasHint = !!hint
   const describedBy = toDescribedBy(id, { hasError, hasHint }) || undefined
 
@@ -70,6 +73,11 @@ export function CheckboxField({
   const handleChange = (checked: boolean): void => {
     field.onChange(checked)
     onValueChange?.(checked)
+  }
+
+  const handleBlur = (): void => {
+    field.onBlur()
+    runValidation(field.value)
   }
 
   type SlotRecord = Record<string, React.ComponentType<never> | undefined>
@@ -111,7 +119,7 @@ export function CheckboxField({
       name={name}
       checked={!!field.value}
       onChange={handleChange}
-      onBlur={field.onBlur}
+      onBlur={handleBlur}
       disabled={isDisabled}
       aria-describedby={describedBy}
       aria-invalid={hasError || undefined}
@@ -126,7 +134,7 @@ export function CheckboxField({
       name={name}
       checked={!!field.value}
       onChange={(e) => handleChange(e.target.checked)}
-      onBlur={field.onBlur}
+      onBlur={handleBlur}
       disabled={isDisabled}
       required={required}
       aria-checked={ariaChecked}
@@ -158,11 +166,17 @@ export function CheckboxField({
       )
     ) : null
 
+  const validatingIndicator = isValidating ? (
+    <span aria-live="polite" role="status">
+      Validating…
+    </span>
+  ) : null
+
   const errorElement = hasError ? (
     ErrorSlot ? (
       <ErrorSlot
         id={`${id}-error`}
-        message={field.error!}
+        message={displayError!}
         className={resolvedClassNames.error}
         {...(resolvedSlotProps.error as
           | Partial<import('../../types').ErrorSlotProps>
@@ -174,7 +188,7 @@ export function CheckboxField({
         className={resolvedClassNames.error}
         role="alert"
       >
-        {field.error}
+        {displayError}
       </span>
     )
   ) : null
@@ -203,6 +217,7 @@ export function CheckboxField({
       {labelPosition === 'left' && labelElement}
       {inputElement}
       {labelPosition === 'right' && labelElement}
+      {validatingIndicator}
       {errorElement ?? hintElement}
     </>
   )

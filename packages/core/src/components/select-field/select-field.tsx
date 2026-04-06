@@ -9,7 +9,8 @@ import type {
   EmptyStateSlotProps,
   LoadingStateSlotProps,
 } from '../../types'
-import { useField } from '../../hooks'
+import type { ValidateFn } from '../../hooks'
+import { useField, useValidate } from '../../hooks'
 import { useStackFormContext } from '../../context'
 import {
   resolveSlots,
@@ -57,7 +58,7 @@ export interface SelectFieldProps<T = string> extends BaseFieldProps<T> {
       emptyState: Partial<EmptyStateSlotProps>
       loadingState: Partial<LoadingStateSlotProps>
     }>
-  validate?: (value: T) => string | undefined
+  validate?: ValidateFn<T>
 }
 
 export function SelectField<T = string>({
@@ -76,7 +77,7 @@ export function SelectField<T = string>({
   slots,
   slotProps,
   onValueChange,
-  validate: _validate,
+  validate,
 }: SelectFieldProps<T>): ReactNode {
   const ctx = useStackFormContext()
   const field = useField<T>(name, { label })
@@ -84,7 +85,9 @@ export function SelectField<T = string>({
   const isDisabled = disabledProp ?? ctx.formState.disabled ?? field.disabled
 
   const id = toFieldId(name, formId)
-  const hasError = !!field.error
+  const { validationError, isValidating, runValidation } = useValidate(validate)
+  const displayError = field.error ?? validationError
+  const hasError = !!displayError
   const hasHint = !!hint
   const describedBy = toDescribedBy(id, { hasError, hasHint }) || undefined
 
@@ -160,6 +163,11 @@ export function SelectField<T = string>({
     onValueChange?.(value)
   }
 
+  const handleBlur = (): void => {
+    field.onBlur()
+    runValidation(field.value)
+  }
+
   type SlotRecord = Record<string, React.ComponentType<never> | undefined>
   type ClassRecord = Record<string, string | undefined>
 
@@ -223,7 +231,7 @@ export function SelectField<T = string>({
       name={name}
       value={valueAsString}
       onChange={(e) => handleChange(e.target.value as unknown as T)}
-      onBlur={field.onBlur}
+      onBlur={handleBlur}
       disabled={isDisabled}
       required={required}
       aria-describedby={describedBy}
@@ -344,11 +352,17 @@ export function SelectField<T = string>({
       />
     ) : null
 
+  const validatingIndicator = isValidating ? (
+    <span aria-live="polite" role="status">
+      Validating…
+    </span>
+  ) : null
+
   const errorElement = hasError ? (
     ErrorSlot ? (
       <ErrorSlot
         id={`${id}-error`}
-        message={field.error!}
+        message={displayError!}
         className={resolvedClassNames.error}
         {...(resolvedSlotProps.error as
           | Partial<import('../../types').ErrorSlotProps>
@@ -360,7 +374,7 @@ export function SelectField<T = string>({
         className={resolvedClassNames.error}
         role="alert"
       >
-        {field.error}
+        {displayError}
       </span>
     )
   ) : null
@@ -411,6 +425,7 @@ export function SelectField<T = string>({
       {triggerElement}
       {searchElement}
       {!loading && listContent}
+      {validatingIndicator}
       {errorElement ?? hintElement}
     </>
   )

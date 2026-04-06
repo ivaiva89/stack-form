@@ -5,7 +5,8 @@ import type {
   BaseClassNames,
   SwitchSlotProps,
 } from '../../types'
-import { useField } from '../../hooks'
+import type { ValidateFn } from '../../hooks'
+import { useField, useValidate } from '../../hooks'
 import { useStackFormContext } from '../../context'
 import {
   resolveSlots,
@@ -32,7 +33,7 @@ export interface SwitchFieldProps extends BaseFieldProps<boolean> {
     Partial<{
       input: Partial<SwitchSlotProps>
     }>
-  validate?: (value: boolean) => string | undefined
+  validate?: ValidateFn<boolean>
 }
 
 export function SwitchField({
@@ -50,7 +51,7 @@ export function SwitchField({
   slots,
   slotProps,
   onValueChange,
-  validate: _validate,
+  validate,
 }: SwitchFieldProps): ReactNode {
   const ctx = useStackFormContext()
   const field = useField<boolean>(name, { label })
@@ -58,13 +59,20 @@ export function SwitchField({
   const isDisabled = disabledProp ?? ctx.formState.disabled ?? field.disabled
 
   const id = toFieldId(name, formId)
-  const hasError = !!field.error
+  const { validationError, isValidating, runValidation } = useValidate(validate)
+  const displayError = field.error ?? validationError
+  const hasError = !!displayError
   const hasHint = !!hint
   const describedBy = toDescribedBy(id, { hasError, hasHint }) || undefined
 
   const handleChange = (checked: boolean): void => {
     field.onChange(checked)
     onValueChange?.(checked)
+  }
+
+  const handleBlur = (): void => {
+    field.onBlur()
+    runValidation(field.value)
   }
 
   type SlotRecord = Record<string, React.ComponentType<never> | undefined>
@@ -103,7 +111,7 @@ export function SwitchField({
       name={name}
       checked={isChecked}
       onChange={handleChange}
-      onBlur={field.onBlur}
+      onBlur={handleBlur}
       disabled={isDisabled}
       aria-describedby={describedBy}
       aria-invalid={hasError || undefined}
@@ -122,7 +130,7 @@ export function SwitchField({
       aria-required={required || undefined}
       disabled={isDisabled}
       onClick={() => handleChange(!isChecked)}
-      onBlur={field.onBlur}
+      onBlur={handleBlur}
       className={resolvedClassNames.input}
     >
       {statusLabel ?? (isChecked ? 'On' : 'Off')}
@@ -150,11 +158,17 @@ export function SwitchField({
       )
     ) : null
 
+  const validatingIndicator = isValidating ? (
+    <span aria-live="polite" role="status">
+      Validating…
+    </span>
+  ) : null
+
   const errorElement = hasError ? (
     ErrorSlot ? (
       <ErrorSlot
         id={`${id}-error`}
-        message={field.error!}
+        message={displayError!}
         className={resolvedClassNames.error}
         {...(resolvedSlotProps.error as
           | Partial<import('../../types').ErrorSlotProps>
@@ -166,7 +180,7 @@ export function SwitchField({
         className={resolvedClassNames.error}
         role="alert"
       >
-        {field.error}
+        {displayError}
       </span>
     )
   ) : null
@@ -195,6 +209,7 @@ export function SwitchField({
       {labelPosition === 'left' && labelElement}
       {inputElement}
       {labelPosition === 'right' && labelElement}
+      {validatingIndicator}
       {errorElement ?? hintElement}
     </>
   )

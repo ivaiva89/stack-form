@@ -1,13 +1,12 @@
 declare const process: { env: { NODE_ENV?: string } } | undefined
 
 import type { ReactNode, ComponentType } from 'react'
+import { useRef, useCallback, useLayoutEffect } from 'react'
 import type {
   BaseFieldProps,
   BaseSlots,
   BaseClassNames,
-  TextInputSlotProps,
-  PrefixSlotProps,
-  SuffixSlotProps,
+  TextareaSlotProps,
   CounterSlotProps,
 } from '../../types'
 import type { ValidateFn } from '../../hooks'
@@ -21,39 +20,34 @@ import {
   toDescribedBy,
 } from '../../utils'
 
-export interface TextFieldSlots extends BaseSlots {
-  Input?: ComponentType<TextInputSlotProps>
-  Prefix?: ComponentType<PrefixSlotProps>
-  Suffix?: ComponentType<SuffixSlotProps>
+export interface TextareaFieldSlots extends BaseSlots {
+  Input?: ComponentType<TextareaSlotProps>
   Counter?: ComponentType<CounterSlotProps>
 }
 
-export interface TextFieldClassNames extends BaseClassNames {
-  prefix?: string
-  suffix?: string
+export interface TextareaFieldClassNames extends BaseClassNames {
   counter?: string
 }
 
-export interface TextFieldProps extends BaseFieldProps<string> {
+export interface TextareaFieldProps extends BaseFieldProps<string> {
   placeholder?: string
   maxLength?: number
   showCount?: boolean
-  type?: 'text' | 'email' | 'password' | 'search' | 'tel' | 'url'
-  prefix?: ReactNode
-  suffix?: ReactNode
-  classNames?: TextFieldClassNames
-  slots?: TextFieldSlots
+  rows?: number
+  maxRows?: number
+  autoResize?: boolean
+  resize?: 'none' | 'vertical' | 'horizontal' | 'both'
+  classNames?: TextareaFieldClassNames
+  slots?: TextareaFieldSlots
   slotProps?: BaseFieldProps<string>['slotProps'] &
     Partial<{
-      input: Partial<TextInputSlotProps>
-      prefix: Partial<PrefixSlotProps>
-      suffix: Partial<SuffixSlotProps>
+      input: Partial<TextareaSlotProps>
       counter: Partial<CounterSlotProps>
     }>
   validate?: ValidateFn<string>
 }
 
-export function TextField({
+export function TextareaField({
   name,
   label,
   hint,
@@ -63,21 +57,23 @@ export function TextField({
   placeholder,
   maxLength,
   showCount = false,
-  type = 'text',
-  prefix,
-  suffix,
+  rows = 3,
+  maxRows,
+  autoResize = false,
+  resize = 'vertical',
   classNames,
   slots,
   slotProps,
   onValueChange,
   validate,
-}: TextFieldProps): ReactNode {
+}: TextareaFieldProps): ReactNode {
   const ctx = useStackFormContext()
   const field = useField<string>(name, { label })
   const formId = ctx.formId
   const isDisabled = disabledProp ?? ctx.formState.disabled ?? field.disabled
 
   const id = toFieldId(name, formId)
+
   const { validationError, isValidating, runValidation } = useValidate(validate)
   const displayError = field.error ?? validationError
   const hasError = !!displayError
@@ -91,31 +87,65 @@ export function TextField({
     maxLength == null
   ) {
     console.warn(
-      `[StackForm] TextField "${name}": showCount requires maxLength to be set.`
+      `[StackForm] TextareaField "${name}": showCount requires maxLength to be set.`
     )
   }
 
-  type TextFieldSlotsRecord = Record<
-    string,
-    React.ComponentType<never> | undefined
-  >
-  type TextFieldClassNamesRecord = Record<string, string | undefined>
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const mirrorRef = useRef<HTMLDivElement>(null)
 
-  const resolvedSlots = resolveSlots(
-    {} as TextFieldSlotsRecord,
-    undefined,
-    slots as unknown as Partial<TextFieldSlotsRecord>
-  ) as unknown as TextFieldSlots
-  const resolvedSlotProps = resolveSlotProps(undefined, slotProps)
-  const resolvedClassNames = resolveClassNames(
-    undefined,
-    undefined,
-    classNames as unknown as Partial<TextFieldClassNamesRecord>
-  ) as unknown as TextFieldClassNames
+  const updateHeight = useCallback((): void => {
+    const textarea = textareaRef.current
+    const mirror = mirrorRef.current
+    if (!textarea || !mirror || !autoResize) return
+
+    const computed = getComputedStyle(textarea)
+    mirror.style.width = `${textarea.clientWidth}px`
+    mirror.style.font = computed.font
+    mirror.style.letterSpacing = computed.letterSpacing
+    mirror.style.wordSpacing = computed.wordSpacing
+    mirror.style.textIndent = computed.textIndent
+    mirror.style.textTransform = computed.textTransform
+    mirror.style.paddingTop = computed.paddingTop
+    mirror.style.paddingRight = computed.paddingRight
+    mirror.style.paddingBottom = computed.paddingBottom
+    mirror.style.paddingLeft = computed.paddingLeft
+    mirror.style.borderTopWidth = computed.borderTopWidth
+    mirror.style.borderRightWidth = computed.borderRightWidth
+    mirror.style.borderBottomWidth = computed.borderBottomWidth
+    mirror.style.borderLeftWidth = computed.borderLeftWidth
+    mirror.style.boxSizing = computed.boxSizing
+    mirror.style.whiteSpace = 'pre-wrap'
+    mirror.style.wordBreak = 'break-word'
+    mirror.style.overflowWrap = 'break-word'
+
+    mirror.textContent = textarea.value + '\n'
+
+    let targetHeight = mirror.scrollHeight
+
+    if (maxRows != null) {
+      const lineHeight =
+        parseFloat(computed.lineHeight) || parseFloat(computed.fontSize) * 1.2
+      const paddingY =
+        parseFloat(computed.paddingTop) + parseFloat(computed.paddingBottom)
+      const borderY =
+        parseFloat(computed.borderTopWidth) +
+        parseFloat(computed.borderBottomWidth)
+      const maxHeight = lineHeight * maxRows + paddingY + borderY
+      targetHeight = Math.min(targetHeight, maxHeight)
+    }
+
+    textarea.style.height = `${targetHeight}px`
+  }, [autoResize, maxRows])
+
+  useLayoutEffect(() => {
+    updateHeight()
+  })
 
   const handleChange = (value: string): void => {
     field.onChange(value)
     onValueChange?.(value)
+    requestAnimationFrame(updateHeight)
   }
 
   const handleBlur = (): void => {
@@ -123,16 +153,45 @@ export function TextField({
     runValidation(field.value)
   }
 
+  type SlotRecord = Record<string, React.ComponentType<never> | undefined>
+  type ClassRecord = Record<string, string | undefined>
+
+  const resolvedSlots = resolveSlots(
+    {} as SlotRecord,
+    undefined,
+    slots as unknown as Partial<SlotRecord>
+  ) as unknown as TextareaFieldSlots
+  const resolvedSlotProps = resolveSlotProps(undefined, slotProps)
+  const resolvedClassNames = resolveClassNames(
+    undefined,
+    undefined,
+    classNames as unknown as Partial<ClassRecord>
+  ) as unknown as TextareaFieldClassNames
+
+  const InputSlot = resolvedSlots.Input
+  const CounterSlot = resolvedSlots.Counter
   const WrapperSlot = resolvedSlots.Wrapper
   const LabelSlot = resolvedSlots.Label
   const ErrorSlot = resolvedSlots.Error
   const HintSlot = resolvedSlots.Hint
-  const InputSlot = resolvedSlots.Input
-  const PrefixSlot = resolvedSlots.Prefix
-  const SuffixSlot = resolvedSlots.Suffix
-  const CounterSlot = resolvedSlots.Counter
 
   const current = typeof field.value === 'string' ? field.value.length : 0
+
+  const mirrorElement = autoResize ? (
+    <div
+      ref={mirrorRef}
+      aria-hidden="true"
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        visibility: 'hidden',
+        height: 'auto',
+        overflow: 'hidden',
+        pointerEvents: 'none',
+      }}
+    />
+  ) : null
 
   const inputElement = loading ? (
     <div
@@ -150,15 +209,16 @@ export function TextField({
       disabled={isDisabled}
       placeholder={placeholder}
       maxLength={maxLength}
-      type={type}
+      rows={rows}
       required={required}
       aria-describedby={describedBy}
       aria-invalid={hasError || undefined}
       className={resolvedClassNames.input}
-      {...(resolvedSlotProps.input as Partial<TextInputSlotProps> | undefined)}
+      {...(resolvedSlotProps.input as Partial<TextareaSlotProps> | undefined)}
     />
   ) : (
-    <input
+    <textarea
+      ref={textareaRef}
       id={id}
       name={name}
       value={field.value}
@@ -167,45 +227,14 @@ export function TextField({
       disabled={isDisabled}
       placeholder={placeholder}
       maxLength={maxLength}
-      type={type}
+      rows={rows}
       required={required}
       aria-describedby={describedBy}
       aria-invalid={hasError || undefined}
       className={resolvedClassNames.input}
+      style={{ resize: autoResize ? 'none' : resize }}
     />
   )
-
-  const prefixElement =
-    prefix != null ? (
-      PrefixSlot ? (
-        <PrefixSlot
-          className={resolvedClassNames.prefix}
-          {...(resolvedSlotProps.prefix as
-            | Partial<PrefixSlotProps>
-            | undefined)}
-        >
-          {prefix}
-        </PrefixSlot>
-      ) : (
-        <span className={resolvedClassNames.prefix}>{prefix}</span>
-      )
-    ) : null
-
-  const suffixElement =
-    suffix != null ? (
-      SuffixSlot ? (
-        <SuffixSlot
-          className={resolvedClassNames.suffix}
-          {...(resolvedSlotProps.suffix as
-            | Partial<SuffixSlotProps>
-            | undefined)}
-        >
-          {suffix}
-        </SuffixSlot>
-      ) : (
-        <span className={resolvedClassNames.suffix}>{suffix}</span>
-      )
-    ) : null
 
   const counterElement =
     showCount && maxLength != null ? (
@@ -295,9 +324,8 @@ export function TextField({
   const content = (
     <>
       {labelElement}
-      {prefixElement}
+      {mirrorElement}
       {inputElement}
-      {suffixElement}
       {counterElement}
       {validatingIndicator}
       {errorElement ?? hintElement}

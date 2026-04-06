@@ -14,6 +14,7 @@ export type {
   SuffixSlotProps,
   CounterSlotProps,
   TextInputSlotProps,
+  TextareaSlotProps,
   NumberInputSlotProps,
   SelectTriggerSlotProps,
   SelectOptionSlotProps,
