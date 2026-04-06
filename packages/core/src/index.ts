@@ -45,6 +45,8 @@ export {
   SelectField,
   CheckboxField,
   SwitchField,
+  RadioGroupField,
+  NumberField,
 } from './components'
 export type {
   TextFieldProps,
@@ -60,4 +62,11 @@ export type {
   SwitchFieldProps,
   SwitchFieldSlots,
   SwitchFieldClassNames,
+  RadioGroupFieldProps,
+  RadioGroupFieldSlots,
+  RadioGroupFieldClassNames,
+  RadioOption,
+  NumberFieldProps,
+  NumberFieldSlots,
+  NumberFieldClassNames,
 } from './components'

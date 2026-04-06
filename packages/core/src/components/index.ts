@@ -26,3 +26,18 @@ export type {
   SwitchFieldSlots,
   SwitchFieldClassNames,
 } from './switch-field'
+
+export { RadioGroupField } from './radio-group-field'
+export type {
+  RadioGroupFieldProps,
+  RadioGroupFieldSlots,
+  RadioGroupFieldClassNames,
+  RadioOption,
+} from './radio-group-field'
+
+export { NumberField } from './number-field'
+export type {
+  NumberFieldProps,
+  NumberFieldSlots,
+  NumberFieldClassNames,
+} from './number-field'
