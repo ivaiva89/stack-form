@@ -68,11 +68,15 @@ describe('resolveSlotProps', () => {
   })
 
   it('preserves provider keys not overridden by field', () => {
-    const provider = {
+    type Props = {
+      label: Record<string, unknown>
+      error: Record<string, unknown>
+    }
+    const provider: Partial<Props> = {
       label: { className: 'p-label' },
       error: { className: 'p-error' },
     }
-    const field = { label: { className: 'f-label' } }
+    const field: Partial<Props> = { label: { className: 'f-label' } }
     const result = resolveSlotProps(provider, field)
     expect(result.label).toEqual({ className: 'f-label' })
     expect(result.error).toEqual({ className: 'p-error' })
@@ -80,8 +84,10 @@ describe('resolveSlotProps', () => {
 })
 
 describe('resolveClassNames', () => {
+  type CN = Record<string, string | undefined>
+
   it('stacks all three layers', () => {
-    const result = resolveClassNames(
+    const result = resolveClassNames<CN>(
       { wrapper: 'core-w' },
       { wrapper: 'prov-w' },
       { wrapper: 'field-w' }
@@ -90,7 +96,7 @@ describe('resolveClassNames', () => {
   })
 
   it('handles undefined layers gracefully', () => {
-    const result = resolveClassNames(undefined, undefined, {
+    const result = resolveClassNames<CN>(undefined, undefined, {
       wrapper: 'field-w',
     })
     expect(result.wrapper).toBe('field-w')
@@ -101,7 +107,7 @@ describe('resolveClassNames', () => {
   })
 
   it('merges keys across layers', () => {
-    const result = resolveClassNames(
+    const result = resolveClassNames<CN>(
       { wrapper: 'core-w' },
       { label: 'prov-l' },
       { input: 'field-i' }
@@ -112,7 +118,7 @@ describe('resolveClassNames', () => {
   })
 
   it('omits keys that resolve to empty string', () => {
-    const result = resolveClassNames({ wrapper: '' }, { wrapper: '' })
+    const result = resolveClassNames<CN>({ wrapper: '' }, { wrapper: '' })
     expect(result).toEqual({})
   })
 })
