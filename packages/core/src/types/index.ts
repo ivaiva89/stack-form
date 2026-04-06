@@ -18,6 +18,7 @@ export type {
   SelectTriggerSlotProps,
   SelectOptionSlotProps,
   CheckboxSlotProps,
+  SwitchSlotProps,
   RadioOptionSlotProps,
   StepperButtonSlotProps,
   EmptyStateSlotProps,

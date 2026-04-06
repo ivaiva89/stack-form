@@ -16,6 +16,7 @@ export type {
   SelectTriggerSlotProps,
   SelectOptionSlotProps,
   CheckboxSlotProps,
+  SwitchSlotProps,
   RadioOptionSlotProps,
   StepperButtonSlotProps,
   EmptyStateSlotProps,
@@ -39,7 +40,12 @@ export {
 
 export { useField, useFieldValue } from './hooks'
 
-export { TextField, SelectField } from './components'
+export {
+  TextField,
+  SelectField,
+  CheckboxField,
+  SwitchField,
+} from './components'
 export type {
   TextFieldProps,
   TextFieldSlots,
@@ -48,4 +54,10 @@ export type {
   SelectFieldSlots,
   SelectFieldClassNames,
   SelectOption,
+  CheckboxFieldProps,
+  CheckboxFieldSlots,
+  CheckboxFieldClassNames,
+  SwitchFieldProps,
+  SwitchFieldSlots,
+  SwitchFieldClassNames,
 } from './components'

@@ -103,6 +103,18 @@ export interface CheckboxSlotProps {
   className?: string
 }
 
+export interface SwitchSlotProps {
+  id: string
+  name: string
+  checked: boolean
+  onChange: (checked: boolean) => void
+  onBlur: () => void
+  disabled?: boolean
+  'aria-describedby'?: string
+  'aria-invalid'?: boolean
+  className?: string
+}
+
 export interface RadioOptionSlotProps<T = string> {
   value: T
   label: string
@@ -137,6 +149,7 @@ export interface SlotComponentMap {
   SelectTrigger: ComponentType<SelectTriggerSlotProps>
   SelectOption: ComponentType<SelectOptionSlotProps>
   Checkbox: ComponentType<CheckboxSlotProps>
+  Switch: ComponentType<SwitchSlotProps>
   RadioOption: ComponentType<RadioOptionSlotProps>
   StepperIncrement: ComponentType<StepperButtonSlotProps>
   StepperDecrement: ComponentType<StepperButtonSlotProps>
