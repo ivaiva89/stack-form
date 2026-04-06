@@ -1,9 +1,11 @@
-// @stackform/core public API
 export type {
   FieldState,
   FieldResolver,
   CoreFormState,
   AdapterType,
+} from './field-state'
+
+export type {
   WrapperSlotProps,
   LabelSlotProps,
   ErrorSlotProps,
@@ -21,7 +23,6 @@ export type {
   EmptyStateSlotProps,
   LoadingStateSlotProps,
   SlotComponentMap,
-  BaseFieldProps,
-  BaseSlots,
-  BaseClassNames,
-} from './types'
+} from './slots'
+
+export type { BaseFieldProps, BaseSlots, BaseClassNames } from './base-props'
