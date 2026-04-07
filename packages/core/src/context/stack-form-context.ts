@@ -1,11 +1,17 @@
 import { createContext, useContext } from 'react'
-import type { FieldResolver, CoreFormState, AdapterType } from '../types'
+import type {
+  FieldResolver,
+  FieldHook,
+  CoreFormState,
+  AdapterType,
+} from '../types'
 
 export interface StackFormContextValue {
   resolver: FieldResolver
   formState: CoreFormState
   adapterType: AdapterType
   formId?: string
+  useFieldHook?: FieldHook
 }
 
 export const StackFormContext = createContext<StackFormContextValue | null>(

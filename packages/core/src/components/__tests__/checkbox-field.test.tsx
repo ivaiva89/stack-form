@@ -81,7 +81,7 @@ describe('CheckboxField', () => {
     expect(screen.getByTestId('agree-skeleton')).toBeInTheDocument()
   })
 
-  it('slots.Input not resolved when core defaults lack Input key (resolveSlots design)', () => {
+  it('field-level slots.Input is resolved via resolveSlots', () => {
     function CustomCheck(): ReactNode {
       return <div data-testid="custom-check">Custom</div>
     }
@@ -90,9 +90,7 @@ describe('CheckboxField', () => {
       label: 'Agree',
       slots: { Input: CustomCheck },
     })
-    // resolveSlots iterates coreDefaults keys — empty defaults means field slots are not picked up
-    expect(screen.queryByTestId('custom-check')).not.toBeInTheDocument()
-    expect(screen.getByRole('checkbox')).toBeInTheDocument()
+    expect(screen.getByTestId('custom-check')).toBeInTheDocument()
   })
 
   it('classNames applied to wrapper and label', () => {

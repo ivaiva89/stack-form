@@ -4,8 +4,14 @@ import { clsx } from 'clsx'
 export function resolveSlots<
   S extends Record<string, ComponentType<never> | undefined>,
 >(coreDefaults: S, providerSlots?: Partial<S>, fieldSlots?: Partial<S>): S {
+  const allKeys = new Set<keyof S>([
+    ...(Object.keys(coreDefaults) as Array<keyof S>),
+    ...(Object.keys(providerSlots ?? {}) as Array<keyof S>),
+    ...(Object.keys(fieldSlots ?? {}) as Array<keyof S>),
+  ])
+
   const resolved = { ...coreDefaults }
-  for (const key of Object.keys(coreDefaults) as Array<keyof S>) {
+  for (const key of allKeys) {
     resolved[key] = (fieldSlots?.[key] ??
       providerSlots?.[key] ??
       coreDefaults[key]) as S[keyof S]

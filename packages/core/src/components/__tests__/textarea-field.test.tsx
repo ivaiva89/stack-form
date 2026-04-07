@@ -86,7 +86,7 @@ describe('TextareaField', () => {
     expect(screen.getByTestId('bio-skeleton')).toBeInTheDocument()
   })
 
-  it('slots.Input not resolved when core defaults lack Input key (resolveSlots design)', () => {
+  it('field-level slots.Input is resolved via resolveSlots', () => {
     function CustomTextarea(): ReactNode {
       return <div data-testid="custom-textarea">Custom</div>
     }
@@ -95,9 +95,7 @@ describe('TextareaField', () => {
       label: 'Bio',
       slots: { Input: CustomTextarea },
     })
-    // resolveSlots iterates coreDefaults keys — empty defaults means field slots are not picked up
-    expect(screen.queryByTestId('custom-textarea')).not.toBeInTheDocument()
-    expect(screen.getByRole('textbox')).toBeInTheDocument()
+    expect(screen.getByTestId('custom-textarea')).toBeInTheDocument()
   })
 
   it('classNames applied to wrapper, label, input', () => {

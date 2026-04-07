@@ -8,6 +8,7 @@ import type {
   FieldState,
   CoreFormState,
 } from '@stackform/core'
+import { useRHFFieldInternal } from './use-rhf-field-internal'
 
 interface RHFFormProviderProps<T extends FieldValues = FieldValues> {
   form: UseFormReturn<T>
@@ -54,6 +55,7 @@ export function RHFFormProvider<T extends FieldValues = FieldValues>({
       formState,
       adapterType: 'rhf' as const,
       formId,
+      useFieldHook: useRHFFieldInternal,
     }),
     [resolver, formState, formId]
   )

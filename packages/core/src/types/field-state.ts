@@ -11,6 +11,8 @@ export interface FieldState<T = unknown> {
 
 export type FieldResolver = (name: string) => FieldState<unknown>
 
+export type FieldHook = (name: string) => FieldState<unknown>
+
 export interface CoreFormState {
   isSubmitting: boolean
   isSubmitted: boolean

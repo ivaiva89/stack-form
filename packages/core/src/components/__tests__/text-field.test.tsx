@@ -86,7 +86,7 @@ describe('TextField', () => {
     expect(screen.getByTestId('email-skeleton')).toBeInTheDocument()
   })
 
-  it('slots.Input not resolved when core defaults lack Input key (resolveSlots design)', () => {
+  it('field-level slots.Input is resolved via resolveSlots', () => {
     function CustomInput(): ReactNode {
       return <input data-testid="custom-input" data-custom="true" />
     }
@@ -95,10 +95,7 @@ describe('TextField', () => {
       label: 'Email',
       slots: { Input: CustomInput },
     })
-    // resolveSlots iterates coreDefaults keys — empty defaults means field slots are not picked up
-    // native <input> renders instead of custom slot
-    expect(screen.queryByTestId('custom-input')).not.toBeInTheDocument()
-    expect(screen.getByRole('textbox')).toBeInTheDocument()
+    expect(screen.getByTestId('custom-input')).toBeInTheDocument()
   })
 
   it('classNames applied to wrapper, label, input, error, hint', () => {

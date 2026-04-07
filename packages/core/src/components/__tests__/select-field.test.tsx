@@ -87,7 +87,7 @@ describe('SelectField', () => {
     expect(screen.getByTestId('color-skeleton')).toBeInTheDocument()
   })
 
-  it('slots.Trigger not resolved when core defaults lack Trigger key (resolveSlots design)', () => {
+  it('field-level slots.Trigger is resolved via resolveSlots', () => {
     function CustomTrigger(): ReactNode {
       return <div data-testid="custom-trigger">Custom</div>
     }
@@ -96,9 +96,7 @@ describe('SelectField', () => {
       label: 'Color',
       slots: { Trigger: CustomTrigger },
     })
-    // resolveSlots iterates coreDefaults keys — empty defaults means field slots are not picked up
-    expect(screen.queryByTestId('custom-trigger')).not.toBeInTheDocument()
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
+    expect(screen.getByTestId('custom-trigger')).toBeInTheDocument()
   })
 
   it('classNames applied to wrapper and label', () => {

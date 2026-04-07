@@ -84,7 +84,7 @@ describe('NumberField', () => {
     expect(screen.getByTestId('qty-skeleton')).toBeInTheDocument()
   })
 
-  it('slots.Input not resolved when core defaults lack Input key (resolveSlots design)', () => {
+  it('field-level slots.Input is resolved via resolveSlots', () => {
     function CustomInput(): ReactNode {
       return <div data-testid="custom-num">Custom</div>
     }
@@ -93,9 +93,7 @@ describe('NumberField', () => {
       label: 'Qty',
       slots: { Input: CustomInput },
     })
-    // resolveSlots iterates coreDefaults keys — empty defaults means field slots are not picked up
-    expect(screen.queryByTestId('custom-num')).not.toBeInTheDocument()
-    expect(screen.getByRole('spinbutton')).toBeInTheDocument()
+    expect(screen.getByTestId('custom-num')).toBeInTheDocument()
   })
 
   it('classNames applied to wrapper and label', () => {

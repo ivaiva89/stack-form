@@ -2,6 +2,7 @@
 export type {
   FieldState,
   FieldResolver,
+  FieldHook,
   CoreFormState,
   AdapterType,
   WrapperSlotProps,
@@ -30,6 +31,8 @@ export type {
 
 export { StackFormContext, useStackFormContext } from './context'
 export type { StackFormContextValue } from './context'
+export { SlotDefaultsContext, useSlotDefaults } from './context'
+export type { SlotDefaultsContextValue } from './context'
 
 export {
   resolveSlots,

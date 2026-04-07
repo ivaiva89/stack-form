@@ -85,7 +85,7 @@ describe('SwitchField', () => {
     expect(screen.getByTestId('notify-skeleton')).toBeInTheDocument()
   })
 
-  it('slots.Input not resolved when core defaults lack Input key (resolveSlots design)', () => {
+  it('field-level slots.Input is resolved via resolveSlots', () => {
     function CustomSwitch(): ReactNode {
       return <div data-testid="custom-switch">Custom</div>
     }
@@ -94,9 +94,7 @@ describe('SwitchField', () => {
       label: 'Notify',
       slots: { Input: CustomSwitch },
     })
-    // resolveSlots iterates coreDefaults keys — empty defaults means field slots are not picked up
-    expect(screen.queryByTestId('custom-switch')).not.toBeInTheDocument()
-    expect(screen.getByRole('switch')).toBeInTheDocument()
+    expect(screen.getByTestId('custom-switch')).toBeInTheDocument()
   })
 
   it('classNames applied to wrapper and label', () => {

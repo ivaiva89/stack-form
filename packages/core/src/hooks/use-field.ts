@@ -18,5 +18,6 @@ export function useField<T = unknown>(
     }
   }
 
-  return ctx.resolver(name) as unknown as FieldState<T>
+  const resolveField = ctx.useFieldHook ?? ctx.resolver
+  return resolveField(name) as unknown as FieldState<T>
 }

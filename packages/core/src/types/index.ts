@@ -1,6 +1,7 @@
 export type {
   FieldState,
   FieldResolver,
+  FieldHook,
   CoreFormState,
   AdapterType,
 } from './field-state'

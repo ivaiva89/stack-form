@@ -90,7 +90,7 @@ describe('RadioGroupField', () => {
     expect(screen.getByTestId('size-skeleton')).toBeInTheDocument()
   })
 
-  it('slots.Option not resolved when core defaults lack Option key (resolveSlots design)', () => {
+  it('field-level slots.Option is resolved via resolveSlots', () => {
     function CustomOption(props: { value: string; label: string }): ReactNode {
       return <div data-testid={`custom-${props.value}`}>{props.label}</div>
     }
@@ -99,10 +99,7 @@ describe('RadioGroupField', () => {
       label: 'Size',
       slots: { Option: CustomOption },
     })
-    // resolveSlots iterates coreDefaults keys — empty defaults means field slots are not picked up
-    expect(screen.queryByTestId('custom-sm')).not.toBeInTheDocument()
-    // native radio inputs render instead
-    expect(screen.getAllByRole('radio')).toHaveLength(3)
+    expect(screen.getByTestId('custom-sm')).toBeInTheDocument()
   })
 
   it('classNames applied to wrapper', () => {

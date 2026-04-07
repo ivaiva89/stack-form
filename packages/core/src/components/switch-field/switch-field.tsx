@@ -7,7 +7,7 @@ import type {
 } from '../../types'
 import type { ValidateFn } from '../../hooks'
 import { useField, useValidate } from '../../hooks'
-import { useStackFormContext } from '../../context'
+import { useStackFormContext, useSlotDefaults } from '../../context'
 import {
   resolveSlots,
   resolveSlotProps,
@@ -54,6 +54,7 @@ export function SwitchField({
   validate,
 }: SwitchFieldProps): ReactNode {
   const ctx = useStackFormContext()
+  const slotDefaults = useSlotDefaults()
   const field = useField<boolean>(name, { label })
   const formId = ctx.formId
   const isDisabled = disabledProp ?? ctx.formState.disabled ?? field.disabled
@@ -80,13 +81,13 @@ export function SwitchField({
 
   const resolvedSlots = resolveSlots(
     {} as SlotRecord,
-    undefined,
+    slotDefaults.slots as Partial<SlotRecord> | undefined,
     slots as unknown as Partial<SlotRecord>
   ) as unknown as SwitchFieldSlots
-  const resolvedSlotProps = resolveSlotProps(undefined, slotProps)
+  const resolvedSlotProps = resolveSlotProps(slotDefaults.slotProps, slotProps)
   const resolvedClassNames = resolveClassNames(
     undefined,
-    undefined,
+    slotDefaults.classNames as Partial<ClassRecord> | undefined,
     classNames as unknown as Partial<ClassRecord>
   ) as unknown as SwitchFieldClassNames
 
