@@ -17,6 +17,7 @@ const config: StorybookConfig = {
       '@stackform/core': path.resolve(__dirname, '../../../packages/core/src'),
       '@stackform/ui': path.resolve(__dirname, '../../../packages/ui/src'),
       '@stackform/rhf': path.resolve(__dirname, '../../../packages/rhf/src'),
+      '@stackform/zod': path.resolve(__dirname, '../../../packages/zod/src'),
     }
     return viteConfig
   },

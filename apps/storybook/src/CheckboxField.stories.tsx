@@ -2,53 +2,48 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { TextField } from '@stackform/ui'
+import { CheckboxField } from '@stackform/ui'
 import type { LabelSlotProps } from '@stackform/ui'
 import { RHFFormProvider } from '@stackform/rhf'
 import { useZodField } from '@stackform/zod'
 
-const meta: Meta<typeof TextField> = {
-  title: 'Fields/TextField',
-  component: TextField,
+const meta: Meta<typeof CheckboxField> = {
+  title: 'Fields/CheckboxField',
+  component: CheckboxField,
   argTypes: {
     name: { control: 'text' },
     label: { control: 'text' },
-    placeholder: { control: 'text' },
     hint: { control: 'text' },
     disabled: { control: 'boolean' },
     loading: { control: 'boolean' },
     required: { control: 'boolean' },
-    showCount: { control: 'boolean' },
-    maxLength: { control: 'number' },
-    type: {
-      control: 'select',
-      options: ['text', 'email', 'password', 'search', 'tel', 'url'],
-    },
+    indeterminate: { control: 'boolean' },
+    labelPosition: { control: 'select', options: ['left', 'right'] },
   },
 }
 
 export default meta
-type Story = StoryObj<typeof TextField>
+type Story = StoryObj<typeof CheckboxField>
 
 export const Default: Story = {
   name: 'Default',
   args: {
-    name: 'username',
-    label: 'Username',
+    name: 'agreed',
+    label: 'I agree to the terms',
   },
 }
 
 function WithErrorWrapper() {
-  const form = useForm({ defaultValues: { username: '' } })
+  const form = useForm({ defaultValues: { agreed: false } })
   useEffect(() => {
-    form.setError('username', {
+    form.setError('agreed', {
       type: 'manual',
       message: 'This field is required',
     })
   }, [form.setError])
   return (
     <RHFFormProvider form={form}>
-      <TextField name="username" label="Username" />
+      <CheckboxField name="agreed" label="I agree to the terms" />
     </RHFFormProvider>
   )
 }
@@ -61,8 +56,8 @@ export const WithError: Story = {
 export const WithHint: Story = {
   name: 'WithHint',
   args: {
-    name: 'username',
-    label: 'Username',
+    name: 'agreed',
+    label: 'I agree to the terms',
     hint: 'Shown below the input',
   },
 }
@@ -70,8 +65,8 @@ export const WithHint: Story = {
 export const Loading: Story = {
   name: 'Loading',
   args: {
-    name: 'username',
-    label: 'Username',
+    name: 'agreed',
+    label: 'I agree to the terms',
     loading: true,
   },
 }
@@ -79,8 +74,8 @@ export const Loading: Story = {
 export const Disabled: Story = {
   name: 'Disabled',
   args: {
-    name: 'username',
-    label: 'Username',
+    name: 'agreed',
+    label: 'I agree to the terms',
     disabled: true,
   },
 }
@@ -105,23 +100,25 @@ function CustomLabel({
 export const WithSlotOverride: Story = {
   name: 'WithSlotOverride',
   render: () => (
-    <TextField
-      name="username"
-      label="Username"
+    <CheckboxField
+      name="agreed"
+      label="I agree to the terms"
       slots={{ Label: CustomLabel }}
     />
   ),
 }
 
-const usernameSchema = z.string().min(3, 'Must be at least 3 characters')
+const agreedSchema = z
+  .boolean()
+  .refine((v) => v, { message: 'You must accept the terms' })
 
 function WithSchemaValidationWrapper() {
-  const { fieldProps } = useZodField<string>('username', usernameSchema)
+  const { fieldProps } = useZodField<boolean>('agreed', agreedSchema)
   return (
-    <TextField
-      name="username"
-      label="Username"
-      placeholder="Type then blur to validate"
+    <CheckboxField
+      name="agreed"
+      label="I agree to the terms"
+      hint="Check the box then blur to validate"
       {...fieldProps}
     />
   )
@@ -130,4 +127,13 @@ function WithSchemaValidationWrapper() {
 export const WithSchemaValidation: Story = {
   name: 'WithSchemaValidation',
   render: () => <WithSchemaValidationWrapper />,
+}
+
+export const Indeterminate: Story = {
+  name: 'Indeterminate',
+  args: {
+    name: 'agreed',
+    label: 'I agree to the terms',
+    indeterminate: true,
+  },
 }

@@ -2,14 +2,14 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { TextField } from '@stackform/ui'
+import { NumberField } from '@stackform/ui'
 import type { LabelSlotProps } from '@stackform/ui'
 import { RHFFormProvider } from '@stackform/rhf'
 import { useZodField } from '@stackform/zod'
 
-const meta: Meta<typeof TextField> = {
-  title: 'Fields/TextField',
-  component: TextField,
+const meta: Meta<typeof NumberField> = {
+  title: 'Fields/NumberField',
+  component: NumberField,
   argTypes: {
     name: { control: 'text' },
     label: { control: 'text' },
@@ -18,37 +18,35 @@ const meta: Meta<typeof TextField> = {
     disabled: { control: 'boolean' },
     loading: { control: 'boolean' },
     required: { control: 'boolean' },
-    showCount: { control: 'boolean' },
-    maxLength: { control: 'number' },
-    type: {
-      control: 'select',
-      options: ['text', 'email', 'password', 'search', 'tel', 'url'],
-    },
+    min: { control: 'number' },
+    max: { control: 'number' },
+    step: { control: 'number' },
+    showStepper: { control: 'boolean' },
   },
 }
 
 export default meta
-type Story = StoryObj<typeof TextField>
+type Story = StoryObj<typeof NumberField>
 
 export const Default: Story = {
   name: 'Default',
   args: {
-    name: 'username',
-    label: 'Username',
+    name: 'quantity',
+    label: 'Quantity',
   },
 }
 
 function WithErrorWrapper() {
-  const form = useForm({ defaultValues: { username: '' } })
+  const form = useForm({ defaultValues: { quantity: 0 } })
   useEffect(() => {
-    form.setError('username', {
+    form.setError('quantity', {
       type: 'manual',
       message: 'This field is required',
     })
   }, [form.setError])
   return (
     <RHFFormProvider form={form}>
-      <TextField name="username" label="Username" />
+      <NumberField name="quantity" label="Quantity" />
     </RHFFormProvider>
   )
 }
@@ -61,8 +59,8 @@ export const WithError: Story = {
 export const WithHint: Story = {
   name: 'WithHint',
   args: {
-    name: 'username',
-    label: 'Username',
+    name: 'quantity',
+    label: 'Quantity',
     hint: 'Shown below the input',
   },
 }
@@ -70,8 +68,8 @@ export const WithHint: Story = {
 export const Loading: Story = {
   name: 'Loading',
   args: {
-    name: 'username',
-    label: 'Username',
+    name: 'quantity',
+    label: 'Quantity',
     loading: true,
   },
 }
@@ -79,8 +77,8 @@ export const Loading: Story = {
 export const Disabled: Story = {
   name: 'Disabled',
   args: {
-    name: 'username',
-    label: 'Username',
+    name: 'quantity',
+    label: 'Quantity',
     disabled: true,
   },
 }
@@ -105,23 +103,26 @@ function CustomLabel({
 export const WithSlotOverride: Story = {
   name: 'WithSlotOverride',
   render: () => (
-    <TextField
-      name="username"
-      label="Username"
+    <NumberField
+      name="quantity"
+      label="Quantity"
       slots={{ Label: CustomLabel }}
     />
   ),
 }
 
-const usernameSchema = z.string().min(3, 'Must be at least 3 characters')
+const quantitySchema = z
+  .number()
+  .min(1, 'Must be at least 1')
+  .max(99, 'Must be at most 99')
 
 function WithSchemaValidationWrapper() {
-  const { fieldProps } = useZodField<string>('username', usernameSchema)
+  const { fieldProps } = useZodField<number>('quantity', quantitySchema)
   return (
-    <TextField
-      name="username"
-      label="Username"
-      placeholder="Type then blur to validate"
+    <NumberField
+      name="quantity"
+      label="Quantity"
+      placeholder="Enter 1–99, then blur"
       {...fieldProps}
     />
   )
@@ -130,4 +131,16 @@ function WithSchemaValidationWrapper() {
 export const WithSchemaValidation: Story = {
   name: 'WithSchemaValidation',
   render: () => <WithSchemaValidationWrapper />,
+}
+
+export const WithMinMax: Story = {
+  name: 'WithMinMax',
+  args: {
+    name: 'quantity',
+    label: 'Quantity',
+    min: 0,
+    max: 100,
+    step: 5,
+    showStepper: true,
+  },
 }

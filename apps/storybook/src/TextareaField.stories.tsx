@@ -2,14 +2,14 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { TextField } from '@stackform/ui'
+import { TextareaField } from '@stackform/ui'
 import type { LabelSlotProps } from '@stackform/ui'
 import { RHFFormProvider } from '@stackform/rhf'
 import { useZodField } from '@stackform/zod'
 
-const meta: Meta<typeof TextField> = {
-  title: 'Fields/TextField',
-  component: TextField,
+const meta: Meta<typeof TextareaField> = {
+  title: 'Fields/TextareaField',
+  component: TextareaField,
   argTypes: {
     name: { control: 'text' },
     label: { control: 'text' },
@@ -20,35 +20,35 @@ const meta: Meta<typeof TextField> = {
     required: { control: 'boolean' },
     showCount: { control: 'boolean' },
     maxLength: { control: 'number' },
-    type: {
+    rows: { control: 'number' },
+    maxRows: { control: 'number' },
+    autoResize: { control: 'boolean' },
+    resize: {
       control: 'select',
-      options: ['text', 'email', 'password', 'search', 'tel', 'url'],
+      options: ['none', 'vertical', 'horizontal', 'both'],
     },
   },
 }
 
 export default meta
-type Story = StoryObj<typeof TextField>
+type Story = StoryObj<typeof TextareaField>
 
 export const Default: Story = {
   name: 'Default',
   args: {
-    name: 'username',
-    label: 'Username',
+    name: 'bio',
+    label: 'Bio',
   },
 }
 
 function WithErrorWrapper() {
-  const form = useForm({ defaultValues: { username: '' } })
+  const form = useForm({ defaultValues: { bio: '' } })
   useEffect(() => {
-    form.setError('username', {
-      type: 'manual',
-      message: 'This field is required',
-    })
+    form.setError('bio', { type: 'manual', message: 'This field is required' })
   }, [form.setError])
   return (
     <RHFFormProvider form={form}>
-      <TextField name="username" label="Username" />
+      <TextareaField name="bio" label="Bio" />
     </RHFFormProvider>
   )
 }
@@ -61,8 +61,8 @@ export const WithError: Story = {
 export const WithHint: Story = {
   name: 'WithHint',
   args: {
-    name: 'username',
-    label: 'Username',
+    name: 'bio',
+    label: 'Bio',
     hint: 'Shown below the input',
   },
 }
@@ -70,8 +70,8 @@ export const WithHint: Story = {
 export const Loading: Story = {
   name: 'Loading',
   args: {
-    name: 'username',
-    label: 'Username',
+    name: 'bio',
+    label: 'Bio',
     loading: true,
   },
 }
@@ -79,8 +79,8 @@ export const Loading: Story = {
 export const Disabled: Story = {
   name: 'Disabled',
   args: {
-    name: 'username',
-    label: 'Username',
+    name: 'bio',
+    label: 'Bio',
     disabled: true,
   },
 }
@@ -105,22 +105,18 @@ function CustomLabel({
 export const WithSlotOverride: Story = {
   name: 'WithSlotOverride',
   render: () => (
-    <TextField
-      name="username"
-      label="Username"
-      slots={{ Label: CustomLabel }}
-    />
+    <TextareaField name="bio" label="Bio" slots={{ Label: CustomLabel }} />
   ),
 }
 
-const usernameSchema = z.string().min(3, 'Must be at least 3 characters')
+const bioSchema = z.string().min(10, 'Must be at least 10 characters')
 
 function WithSchemaValidationWrapper() {
-  const { fieldProps } = useZodField<string>('username', usernameSchema)
+  const { fieldProps } = useZodField<string>('bio', bioSchema)
   return (
-    <TextField
-      name="username"
-      label="Username"
+    <TextareaField
+      name="bio"
+      label="Bio"
       placeholder="Type then blur to validate"
       {...fieldProps}
     />
