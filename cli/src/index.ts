@@ -1,6 +1,8 @@
 import { Command } from 'commander'
 import { createRequire } from 'node:module'
 import { runAdd } from './commands/add.js'
+import { runConfigGet, runConfigList, runConfigSet } from './commands/config.js'
+import { runDiff } from './commands/diff.js'
 import { runInit } from './commands/init.js'
 import { log } from './utils/logger.js'
 
@@ -49,15 +51,54 @@ program
 program
   .command('diff')
   .description('Show diff between local components and the registry')
-  .action(() => {
-    log.info('diff — coming soon')
+  .argument('[component]', 'Component name to diff')
+  .action(async (component: string | undefined) => {
+    try {
+      await runDiff(component)
+    } catch (err) {
+      log.error(err instanceof Error ? err.message : String(err))
+      process.exit(1)
+    }
   })
 
-program
+const configCmd = program
   .command('config')
   .description('Read or update stackform.json configuration')
-  .action(() => {
-    log.info('config — coming soon')
+
+configCmd
+  .command('get <key>')
+  .description('Print a config value')
+  .action(async (key: string) => {
+    try {
+      await runConfigGet(key)
+    } catch (err) {
+      log.error(err instanceof Error ? err.message : String(err))
+      process.exit(1)
+    }
+  })
+
+configCmd
+  .command('set <key> <value>')
+  .description('Update a config value in stackform.json')
+  .action(async (key: string, value: string) => {
+    try {
+      await runConfigSet(key, value)
+    } catch (err) {
+      log.error(err instanceof Error ? err.message : String(err))
+      process.exit(1)
+    }
+  })
+
+configCmd
+  .command('list')
+  .description('Print full config as JSON')
+  .action(async () => {
+    try {
+      await runConfigList()
+    } catch (err) {
+      log.error(err instanceof Error ? err.message : String(err))
+      process.exit(1)
+    }
   })
 
 program.parse()

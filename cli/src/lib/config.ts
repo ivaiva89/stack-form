@@ -7,6 +7,7 @@ export interface StackformConfig {
   adapter: 'rhf' | 'tanstack' | 'native'
   componentsDir: string
   registryUrl: string
+  installed?: Record<string, string>
 }
 
 const REQUIRED_FIELDS: Array<keyof StackformConfig> = [
