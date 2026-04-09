@@ -11,7 +11,7 @@ import type {
   CounterSlotProps,
 } from '../../types'
 import type { ValidateFn } from '../../hooks'
-import { useField, useValidate } from '../../hooks'
+import { useField } from '../../hooks'
 import { useStackFormContext, useSlotDefaults } from '../../context'
 import {
   resolveSlots,
@@ -74,13 +74,12 @@ export function TextField({
 }: TextFieldProps): ReactNode {
   const ctx = useStackFormContext()
   const slotDefaults = useSlotDefaults()
-  const field = useField<string>(name, { label })
+  const field = useField<string>(name, { label, validate })
   const formId = ctx.formId
   const isDisabled = disabledProp ?? ctx.formState.disabled ?? field.disabled
 
   const id = toFieldId(name, formId)
-  const { validationError, isValidating, runValidation } = useValidate(validate)
-  const displayError = field.error ?? validationError
+  const displayError = field.error
   const hasError = !!displayError
   const hasHint = !!hint
   const describedBy = toDescribedBy(id, { hasError, hasHint }) || undefined
@@ -121,7 +120,7 @@ export function TextField({
 
   const handleBlur = (): void => {
     field.onBlur()
-    runValidation(field.value)
+    field.runValidation(field.value)
   }
 
   const WrapperSlot = resolvedSlots.Wrapper
@@ -226,7 +225,7 @@ export function TextField({
       )
     ) : null
 
-  const validatingIndicator = isValidating ? (
+  const validatingIndicator = field.isValidating ? (
     <span aria-live="polite" role="status">
       Validating…
     </span>

@@ -1,12 +1,19 @@
 declare const process: { env: { NODE_ENV?: string } } | undefined
 
 import type { FieldState } from '../types'
+import type { ValidateFn } from './use-validate'
+import { useValidate } from './use-validate'
 import { useStackFormContext } from '../context'
+
+export interface UseFieldReturn<T> extends FieldState<T> {
+  isValidating: boolean
+  runValidation: (value: unknown) => void
+}
 
 export function useField<T = unknown>(
   name: string,
-  opts?: { label?: string; ariaLabel?: string }
-): FieldState<T> {
+  opts?: { label?: string; ariaLabel?: string; validate?: ValidateFn<T> }
+): UseFieldReturn<T> {
   const ctx = useStackFormContext()
 
   if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
@@ -19,5 +26,16 @@ export function useField<T = unknown>(
   }
 
   const resolveField = ctx.useFieldHook ?? ctx.resolver
-  return resolveField(name) as unknown as FieldState<T>
+  const state = resolveField(name) as unknown as FieldState<T>
+
+  const { validationError, isValidating, runValidation } = useValidate<T>(
+    opts?.validate
+  )
+
+  return {
+    ...state,
+    error: validationError ?? state.error,
+    isValidating,
+    runValidation,
+  }
 }

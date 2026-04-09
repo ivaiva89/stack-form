@@ -37,4 +37,5 @@ export interface BaseFieldProps<T = unknown> {
     hint: Partial<HintSlotProps>
   }>
   onValueChange?: (value: T) => void
+  validate?: (value: T) => string | undefined | Promise<string | undefined>
 }

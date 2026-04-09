@@ -7,7 +7,7 @@ import type {
   StepperButtonSlotProps,
 } from '../../types'
 import type { ValidateFn } from '../../hooks'
-import { useField, useValidate } from '../../hooks'
+import { useField } from '../../hooks'
 import { useStackFormContext, useSlotDefaults } from '../../context'
 import {
   resolveSlots,
@@ -67,13 +67,12 @@ export function NumberField({
 }: NumberFieldProps): ReactNode {
   const ctx = useStackFormContext()
   const slotDefaults = useSlotDefaults()
-  const field = useField<number>(name, { label })
+  const field = useField<number>(name, { label, validate })
   const formId = ctx.formId
   const isDisabled = disabledProp ?? ctx.formState.disabled ?? field.disabled
 
   const id = toFieldId(name, formId)
-  const { validationError, isValidating, runValidation } = useValidate(validate)
-  const displayError = field.error ?? validationError
+  const displayError = field.error
   const hasError = !!displayError
   const hasHint = !!hint
   const describedBy = toDescribedBy(id, { hasError, hasHint }) || undefined
@@ -87,7 +86,7 @@ export function NumberField({
 
   const handleBlur = (): void => {
     field.onBlur()
-    runValidation(field.value)
+    field.runValidation(field.value)
   }
 
   const handleIncrement = (): void => {
@@ -246,7 +245,7 @@ export function NumberField({
       )
     ) : null
 
-  const validatingIndicator = isValidating ? (
+  const validatingIndicator = field.isValidating ? (
     <span aria-live="polite" role="status">
       Validating…
     </span>

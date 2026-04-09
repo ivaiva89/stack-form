@@ -7,7 +7,7 @@ import type {
   CheckboxSlotProps,
 } from '../../types'
 import type { ValidateFn } from '../../hooks'
-import { useField, useValidate } from '../../hooks'
+import { useField } from '../../hooks'
 import { useStackFormContext, useSlotDefaults } from '../../context'
 import {
   resolveSlots,
@@ -52,13 +52,12 @@ export function CheckboxField({
 }: CheckboxFieldProps): ReactNode {
   const ctx = useStackFormContext()
   const slotDefaults = useSlotDefaults()
-  const field = useField<boolean>(name, { label })
+  const field = useField<boolean>(name, { label, validate })
   const formId = ctx.formId
   const isDisabled = disabledProp ?? ctx.formState.disabled ?? field.disabled
 
   const id = toFieldId(name, formId)
-  const { validationError, isValidating, runValidation } = useValidate(validate)
-  const displayError = field.error ?? validationError
+  const displayError = field.error
   const hasError = !!displayError
   const hasHint = !!hint
   const describedBy = toDescribedBy(id, { hasError, hasHint }) || undefined
@@ -78,7 +77,7 @@ export function CheckboxField({
 
   const handleBlur = (): void => {
     field.onBlur()
-    runValidation(field.value)
+    field.runValidation(field.value)
   }
 
   type SlotRecord = Record<string, React.ComponentType<never> | undefined>
@@ -167,7 +166,7 @@ export function CheckboxField({
       )
     ) : null
 
-  const validatingIndicator = isValidating ? (
+  const validatingIndicator = field.isValidating ? (
     <span aria-live="polite" role="status">
       Validating…
     </span>
