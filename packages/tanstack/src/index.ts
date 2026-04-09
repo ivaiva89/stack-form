@@ -1,1 +1,1 @@
-// @stackform/tanstack public API
+export { TanstackFormProvider } from './provider'
