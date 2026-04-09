@@ -1,0 +1,25 @@
+{
+  "name": "@stackform/cli",
+  "version": "0.0.1",
+  "description": "CLI for StackForm — scaffold, add components, and diff your config",
+  "bin": {
+    "stackform": "./dist/index.mjs"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.9.1",
+    "chalk": "^5.4.1",
+    "commander": "^13.1.0",
+    "execa": "^9.5.2",
+    "fs-extra": "^11.3.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}
