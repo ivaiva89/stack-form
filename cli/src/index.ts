@@ -1,5 +1,7 @@
 import { Command } from 'commander'
 import { createRequire } from 'node:module'
+import { runAdd } from './commands/add.js'
+import { runInit } from './commands/init.js'
 import { log } from './utils/logger.js'
 
 const require = createRequire(import.meta.url)
@@ -15,17 +17,34 @@ program
 program
   .command('init')
   .description('Initialise StackForm in a project')
-  .action(() => {
-    log.info('init — coming soon')
+  .action(async () => {
+    try {
+      await runInit()
+    } catch (err) {
+      log.error(err instanceof Error ? err.message : String(err))
+      process.exit(1)
+    }
   })
 
 program
   .command('add')
   .description('Add a StackForm component to your project')
-  .argument('[component]', 'Component name')
-  .action(() => {
-    log.info('add — coming soon')
-  })
+  .argument('[components...]', 'Component names')
+  .option('--force', 'Overwrite existing files without prompting')
+  .option('--registry <url>', 'Override the registry URL from stackform.json')
+  .action(
+    async (
+      components: string[],
+      options: { force?: boolean; registry?: string }
+    ) => {
+      try {
+        await runAdd(components, options)
+      } catch (err) {
+        log.error(err instanceof Error ? err.message : String(err))
+        process.exit(1)
+      }
+    }
+  )
 
 program
   .command('diff')
