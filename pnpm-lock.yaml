@@ -112,6 +112,61 @@ importers:
         specifier: ^6.3.5
         version: 6.4.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3)
 
+  examples/with-tanstack:
+    dependencies:
+      '@radix-ui/react-label':
+        specifier: ^2.1.7
+        version: 2.1.8(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@stackform/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@stackform/tanstack':
+        specifier: workspace:*
+        version: link:../../packages/tanstack
+      '@stackform/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@tanstack/react-form':
+        specifier: ^1.0.0
+        version: 1.28.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      class-variance-authority:
+        specifier: ^0.7.1
+        version: 0.7.1
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      react:
+        specifier: ^19.1.0
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.1.0
+        version: 19.2.4(react@19.2.4)
+      tailwind-merge:
+        specifier: ^3.3.0
+        version: 3.5.0
+    devDependencies:
+      '@tailwindcss/vite':
+        specifier: ^4.1.5
+        version: 4.2.2(vite@6.4.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3))
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      '@vitejs/plugin-react':
+        specifier: ^4.5.2
+        version: 4.7.0(vite@6.4.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3))
+      tailwindcss:
+        specifier: ^4.1.5
+        version: 4.2.2
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+      vite:
+        specifier: ^6.3.5
+        version: 6.4.2(@types/node@25.5.2)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.3)
+
   packages/core:
     dependencies:
       clsx:
