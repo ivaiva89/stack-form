@@ -2,3 +2,62 @@
 title: Installation
 description: Install StackForm in your project
 ---
+
+## What is StackForm?
+
+StackForm is a headless, slot-based form component library for React that bridges [shadcn/ui](https://ui.shadcn.com) with React Hook Form, TanStack Form, and plain React state. It gives you a unified field API with built-in error display, loading states, character counts, and async selects — with zero per-field boilerplate.
+
+---
+
+## Prerequisites
+
+- React 18+
+- A supported form library: [React Hook Form](https://react-hook-form.com), [TanStack Form](https://tanstack.com/form), or none (native adapter)
+- [shadcn/ui](https://ui.shadcn.com) configured in your project (required only if you use `@stackform/ui` defaults)
+
+---
+
+## Install via npm
+
+Install the packages for your chosen adapter:
+
+```bash
+# React Hook Form
+npm install @stackform/core @stackform/ui @stackform/rhf react-hook-form
+
+# TanStack Form
+npm install @stackform/core @stackform/ui @stackform/tanstack @tanstack/react-form
+
+# Native (no form library)
+npm install @stackform/core @stackform/ui @stackform/native
+```
+
+---
+
+## Install via CLI (recommended)
+
+The CLI scaffolds your project and ejects slot components into your source tree so you have full control.
+
+```bash
+# Initialise StackForm in your project
+npx @stackform/cli init
+
+# Add individual field components
+npx @stackform/cli add text-field
+```
+
+---
+
+## Two customisation paths
+
+<Callout>
+**Path A — npm install**
+
+Use `@stackform/ui` defaults as-is. Customise appearance via `classNames` prop on any field or `StackFormProvider`. No file ejection required.
+
+**Path B — CLI `add`**
+
+Eject individual slot components into your project. Modify the source directly for complete control over markup, styles, and behaviour.
+
+Both paths use the same field API. You can mix them.
+</Callout>

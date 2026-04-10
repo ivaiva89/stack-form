@@ -2,3 +2,130 @@
 title: Using with React Hook Form
 description: Connect StackForm to React Hook Form via RHFFormProvider
 ---
+
+## Full example
+
+```tsx
+import { useForm } from 'react-hook-form'
+import { StackFormProvider, TextField } from '@stackform/ui'
+import { RHFFormProvider } from '@stackform/rhf'
+
+interface FormValues {
+  name: string
+  email: string
+}
+
+export function ContactForm() {
+  const form = useForm<FormValues>({
+    defaultValues: { name: '', email: '' },
+  })
+
+  return (
+    <StackFormProvider>
+      <RHFFormProvider form={form}>
+        <form onSubmit={form.handleSubmit(console.log)} className="space-y-4">
+          <TextField name="name" label="Name" placeholder="Your name" />
+          <TextField
+            name="email"
+            label="Email"
+            type="email"
+            placeholder="you@example.com"
+            hint="We'll never share your email."
+          />
+          <button type="submit">Submit</button>
+        </form>
+      </RHFFormProvider>
+    </StackFormProvider>
+  )
+}
+```
+
+---
+
+## The three required imports
+
+| Import | Package | Purpose |
+|--------|---------|---------|
+| `StackFormProvider` | `@stackform/ui` | Provides default slot implementations and shared classNames |
+| `RHFFormProvider` | `@stackform/rhf` | Bridges React Hook Form's `form` instance into StackForm context |
+| Field components (`TextField`, etc.) | `@stackform/ui` | Slot-based field components that read from context |
+
+`StackFormProvider` wraps `RHFFormProvider`. The order matters — `StackFormProvider` must be the outer wrapper.
+
+---
+
+## useRHFForm factory
+
+`useRHFForm` is an optional factory that returns both the `form` handle and a pre-wired `FormProvider` component, reducing import surface and improving TypeScript inference:
+
+```tsx
+import { useRHFForm } from '@stackform/rhf'
+import { StackFormProvider, TextField } from '@stackform/ui'
+
+interface FormValues {
+  name: string
+  email: string
+}
+
+export function ContactForm() {
+  const { form, FormProvider } = useRHFForm<FormValues>({
+    defaultValues: { name: '', email: '' },
+  })
+
+  return (
+    <StackFormProvider>
+      <FormProvider>
+        <form onSubmit={form.handleSubmit(console.log)} className="space-y-4">
+          <TextField name="name" label="Name" />
+          <TextField name="email" label="Email" type="email" />
+          <button type="submit">Submit</button>
+        </form>
+      </FormProvider>
+    </StackFormProvider>
+  )
+}
+```
+
+`FormProvider` is memoised inside the hook so it does not re-create on every render.
+
+---
+
+## Error display
+
+Errors surface automatically. When React Hook Form sets a field error (via `setError`, `resolver`, or built-in validation), the corresponding field reads it from context and renders the error message below the input — no prop wiring required.
+
+```tsx
+const form = useForm<FormValues>({
+  defaultValues: { email: '' },
+})
+
+// Trigger a manual error
+form.setError('email', { message: 'Invalid email address' })
+
+// TextField renders the error automatically
+<TextField name="email" label="Email" />
+```
+
+---
+
+## Slot override example
+
+Replace any slot with a custom component by passing it to the `slots` prop:
+
+```tsx
+function BoldLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
+  return (
+    <label htmlFor={htmlFor} className="font-bold uppercase tracking-wide text-xs">
+      {children}
+    </label>
+  )
+}
+
+<TextField
+  name="email"
+  label="Email"
+  slots={{ label: BoldLabel }}
+/>
+```
+
+Slot components receive only display-level props and are unaware of the form library.

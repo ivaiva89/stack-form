@@ -2,3 +2,84 @@
 title: Using with TanStack Form
 description: Connect StackForm to TanStack Form via TanstackFormProvider
 ---
+
+## Full example
+
+```tsx
+import { useForm } from '@tanstack/react-form'
+import { StackFormProvider, TextField, CheckboxField } from '@stackform/ui'
+import { TanstackFormProvider } from '@stackform/tanstack'
+
+export function ContactForm() {
+  const form = useForm({
+    defaultValues: { name: '', email: '', terms: false },
+    onSubmit: async ({ value }) => {
+      console.log('Submitted:', value)
+    },
+  })
+
+  return (
+    <StackFormProvider>
+      <TanstackFormProvider form={form}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            form.handleSubmit()
+          }}
+          className="space-y-4"
+        >
+          <TextField name="name" label="Name" placeholder="Your name" />
+          <TextField
+            name="email"
+            label="Email"
+            type="email"
+            placeholder="you@example.com"
+            hint="We'll never share your email."
+          />
+          <CheckboxField name="terms" label="I agree to the terms and conditions" />
+          <button
+            type="submit"
+            disabled={form.state.isSubmitting}
+          >
+            {form.state.isSubmitting ? 'Submitting…' : 'Submit'}
+          </button>
+        </form>
+      </TanstackFormProvider>
+    </StackFormProvider>
+  )
+}
+```
+
+---
+
+## TanstackFormProvider and form.useForm()
+
+Pass your TanStack `form` instance directly to `TanstackFormProvider`. The provider subscribes to the form store and injects resolver and state into StackForm context:
+
+```tsx
+import { useForm } from '@tanstack/react-form'
+import { TanstackFormProvider } from '@stackform/tanstack'
+
+const form = useForm({ defaultValues: { name: '' } })
+
+<TanstackFormProvider form={form}>
+  {/* field components here */}
+</TanstackFormProvider>
+```
+
+The `form` prop accepts any TanStack `AnyFormApi` — the provider is not tied to a specific schema library.
+
+---
+
+## Validation differences vs React Hook Form
+
+TanStack Form validates fields on `onChange` by default, whereas React Hook Form validates on `submit` (unless `mode: 'onChange'` is set). This affects when errors appear:
+
+| Behaviour | React Hook Form | TanStack Form |
+|-----------|----------------|---------------|
+| Default validation trigger | `submit` | `onChange` |
+| Per-field validators | via `register` rules or resolver | via `validators` option on the field |
+| Async validation | resolver | `asyncValidators` on the field |
+
+With StackForm, errors surface whenever the underlying form library sets them — the field component does not control the trigger. Configure validation timing in your TanStack `useForm` call or per-field `validators` option, not in StackForm.
