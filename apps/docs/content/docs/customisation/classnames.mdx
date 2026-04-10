@@ -2,3 +2,64 @@
 title: classNames Override
 description: Apply Tailwind class overrides per slot using the classNames prop
 ---
+
+The `classNames` prop accepts an object of Tailwind class strings keyed by slot name. Classes stack across all three levels: `cn(core, provider, field)` — none are discarded.
+
+## Available slot keys
+
+Every field shares the base keys from `BaseClassNames`:
+
+| Key | Applies to |
+|-----|-----------|
+| `wrapper` | Outer container element |
+| `label` | Label element |
+| `input` | Input or control element |
+| `error` | Error message |
+| `hint` | Hint/helper text |
+
+`TextField` adds:
+
+| Key | Applies to |
+|-----|-----------|
+| `prefix` | Prefix content wrapper |
+| `suffix` | Suffix content wrapper |
+| `counter` | Character counter |
+
+See each component's reference page for its full `classNames` key list.
+
+## Example: custom error colour
+
+Override the error message colour on a single field:
+
+```tsx
+<TextField
+  name="email"
+  label="Email"
+  classNames={{ error: 'text-orange-600 font-medium' }}
+/>
+```
+
+The class string is merged with the core error classes — it does not replace them.
+
+## Example: global classNames via StackFormProvider
+
+Set default classNames for every field in the form. Field-level classNames stack on top.
+
+```tsx
+<StackFormProvider
+  classNames={{
+    label: 'text-xs font-semibold uppercase tracking-wide text-muted-foreground',
+    error: 'text-destructive text-xs mt-1',
+    hint: 'text-muted-foreground text-xs mt-1',
+  }}
+>
+  <TextField name="name" label="Name" />
+  <TextField name="email" label="Email" />
+</StackFormProvider>
+```
+
+Any `classNames` set on an individual `TextField` are stacked on top of these provider-level classes via `clsx` — not replaced.
+
+<Callout type="warn">
+`classNames` controls styling only. To change the rendered markup (element type, structure, accessible roles), use the `slots` layer instead.
+</Callout>

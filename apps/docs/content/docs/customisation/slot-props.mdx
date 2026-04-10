@@ -2,3 +2,62 @@
 title: slotProps Override
 description: Pass extra HTML and component props to individual slots
 ---
+
+`slotProps` passes extra props directly to a slot component without replacing it. Use this when you need to add HTML attributes (e.g. `data-testid`, `autoComplete`, `inputMode`) to the default slot implementation.
+
+## Semantics
+
+`slotProps` is an object keyed by slot name. Each value is merged into the props the slot component receives in addition to what StackForm passes automatically.
+
+**Shallow replace per key** — if both provider and field define `slotProps.input`, the field value fully replaces the provider value for that key. Individual sub-keys are not merged.
+
+```ts
+// Provider sets: slotProps.input = { autoComplete: 'off' }
+// Field sets:    slotProps.input = { data-testid: 'email-input' }
+// Result:        slotProps.input = { data-testid: 'email-input' }
+// autoComplete is dropped — field replaces provider for that key
+```
+
+To combine both, repeat the provider's props at the field level.
+
+## Example: add data-testid to the input
+
+```tsx
+<TextField
+  name="email"
+  label="Email"
+  slotProps={{
+    input: { 'data-testid': 'email-input' },
+  }}
+/>
+```
+
+The `data-testid` is forwarded to the underlying `<input>` element. StackForm-managed props (`id`, `value`, `onChange`, `aria-describedby`, etc.) are always applied and cannot be overridden via `slotProps`.
+
+## Example: autoComplete on the input
+
+```tsx
+<TextField
+  name="street"
+  label="Street address"
+  slotProps={{
+    input: { autoComplete: 'street-address' },
+  }}
+/>
+```
+
+## Available slot keys per field
+
+| Field | Accepted slotProps keys |
+|-------|------------------------|
+| `TextField` | `wrapper`, `label`, `input`, `error`, `hint`, `prefix`, `suffix`, `counter` |
+| `TextareaField` | `wrapper`, `label`, `input`, `error`, `hint`, `counter` |
+| `NumberField` | `wrapper`, `label`, `input`, `error`, `hint` |
+| `CheckboxField` | `wrapper`, `label`, `input`, `error`, `hint` |
+| `SwitchField` | `wrapper`, `label`, `input`, `error`, `hint` |
+| `SelectField` | `wrapper`, `label`, `error`, `hint` |
+| `RadioGroupField` | `wrapper`, `label`, `error`, `hint` |
+
+<Callout type="info">
+If you need to replace the slot component entirely (not just add props), use the `slots` layer. If you need to style it, use `classNames`.
+</Callout>

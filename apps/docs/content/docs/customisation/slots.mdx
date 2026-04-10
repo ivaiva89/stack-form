@@ -2,3 +2,78 @@
 title: Slot System
 description: Overview of the three-layer slot customisation system
 ---
+
+Every StackForm field exposes a slot system with three independent override layers. They compose independently — use one, two, or all three together.
+
+## The three layers
+
+| Layer | What it controls | Merge rule |
+|-------|-----------------|------------|
+| `slots` | Which component renders each slot | First non-null wins: field → provider → core default |
+| `slotProps` | Extra props passed to a slot component | Field-level **replaces** provider-level per slot key (shallow replace) |
+| `classNames` | Tailwind classes applied to each slot element | All three stack: `cn(core, provider, field)` |
+
+## Merge semantics
+
+```ts
+// slots — first non-null wins
+resolvedSlot = fieldSlots?.Label ?? providerSlots?.Label ?? DefaultLabel
+
+// slotProps — field fully replaces provider per key
+resolvedInputProps = fieldSlotProps?.input ?? providerSlotProps?.input
+
+// classNames — all three merge via clsx
+resolvedLabelClass = cn(coreClass, providerClass, fieldClass)
+```
+
+## Overriding at provider level
+
+Set a slot override once on `StackFormProvider` to apply it to every field in the form.
+
+```tsx
+import { StackFormProvider } from '@stackform/ui'
+import type { LabelSlotProps } from '@stackform/ui'
+
+function BoldLabel({ htmlFor, children, required }: LabelSlotProps) {
+  return (
+    <label htmlFor={htmlFor} className="font-bold text-sm">
+      {children}
+      {required ? <span aria-hidden="true"> *</span> : null}
+    </label>
+  )
+}
+
+<StackFormProvider slots={{ Label: BoldLabel }}>
+  {/* Every field in here uses BoldLabel */}
+  <TextField name="name" label="Name" />
+  <TextField name="email" label="Email" />
+</StackFormProvider>
+```
+
+## Overriding at field level
+
+Pass `slots` directly to a single field to override just that instance. Field-level always wins over provider-level.
+
+```tsx
+function InlineLabel({ htmlFor, children }: LabelSlotProps) {
+  return (
+    <label htmlFor={htmlFor} className="inline-flex items-center gap-2 text-xs">
+      {children}
+    </label>
+  )
+}
+
+<TextField
+  name="email"
+  label="Email"
+  slots={{ Label: InlineLabel }}
+/>
+```
+
+<Callout type="info">
+**When to use each layer**
+
+- **`slots`** — Replace the markup entirely. Use when className overrides are not enough.
+- **`slotProps`** — Pass extra HTML attributes (e.g. `data-testid`, `autoComplete`) without replacing the component.
+- **`classNames`** — Adjust appearance only. The simplest option when the default markup is correct.
+</Callout>

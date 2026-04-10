@@ -1,4 +1,121 @@
 ---
 title: TextField
-description: Single-line text input field
+description: Single-line text input field with label, error, hint, and character counter
 ---
+
+import { TextField } from '@/components/ClientFields'
+
+`TextField` renders a labeled, accessible `<input>` connected to the active form adapter via context. Error and hint states surface automatically — no prop wiring needed.
+
+<Preview>
+  <TextField
+    name="preview-name"
+    label="Full name"
+    placeholder="Jane Smith"
+    hint="Enter your legal name."
+  />
+</Preview>
+
+## Props
+
+| Prop | Type | Required | Default | Description |
+|------|------|:--------:|---------|-------------|
+| `name` | `string` | yes | — | Field name. Used as the form state key and to derive element IDs. |
+| `label` | `string` | | — | Label text rendered above the input. |
+| `hint` | `string` | | — | Helper text shown below the input when no error is present. |
+| `placeholder` | `string` | | — | Placeholder text for the input. |
+| `type` | `'text' \| 'email' \| 'password' \| 'search' \| 'tel' \| 'url'` | | `'text'` | HTML input type. |
+| `disabled` | `boolean` | | `false` | Disables the input. Inherits from `StackFormProvider` if not set. |
+| `loading` | `boolean` | | `false` | Replaces the input with a skeleton shimmer. |
+| `required` | `boolean` | | `false` | Marks the field as required. Appends `*` to the label. |
+| `maxLength` | `number` | | — | Maximum character count. Required when `showCount` is `true`. |
+| `showCount` | `boolean` | | `false` | Shows a character counter. Requires `maxLength`. |
+| `prefix` | `ReactNode` | | — | Content rendered before the input (e.g. an icon). |
+| `suffix` | `ReactNode` | | — | Content rendered after the input (e.g. a currency symbol). |
+| `classNames` | `TextFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
+| `slots` | `TextFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
+| `slotProps` | `TextFieldSlotProps` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `onValueChange` | `(value: string) => void` | | — | Called after `onChange` with the new value. |
+| `validate` | `(value: string) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
+
+## Slots
+
+| Slot | Prop interface | Description |
+|------|---------------|-------------|
+| `Wrapper` | `WrapperSlotProps` | Outer container element |
+| `Label` | `LabelSlotProps` | Label element |
+| `Input` | `TextInputSlotProps` | The `<input>` element |
+| `Error` | `ErrorSlotProps` | Error message |
+| `Hint` | `HintSlotProps` | Hint/helper text |
+| `Prefix` | `PrefixSlotProps` | Prefix content wrapper |
+| `Suffix` | `SuffixSlotProps` | Suffix content wrapper |
+| `Counter` | `CounterSlotProps` | Character counter |
+
+## classNames
+
+| Key | Applied to |
+|-----|-----------|
+| `wrapper` | Outer container |
+| `label` | Label element |
+| `input` | Input element |
+| `error` | Error message |
+| `hint` | Hint text |
+| `prefix` | Prefix wrapper |
+| `suffix` | Suffix wrapper |
+| `counter` | Character counter |
+
+## Examples
+
+### With error
+
+Errors surface automatically from the form adapter. Trigger one manually to test:
+
+```tsx
+form.setError('email', { message: 'Enter a valid email address' })
+
+<TextField name="email" label="Email" type="email" />
+```
+
+### With hint
+
+```tsx
+<TextField
+  name="username"
+  label="Username"
+  hint="3–20 characters, letters and numbers only."
+/>
+```
+
+### With character counter
+
+```tsx
+<TextField
+  name="bio"
+  label="Bio"
+  maxLength={160}
+  showCount
+/>
+```
+
+### With slot override
+
+Replace the `Label` slot with a custom component. Slot components receive only display-level props.
+
+```tsx
+import type { LabelSlotProps } from '@stackform/ui'
+
+function UpperLabel({ htmlFor, children, required }: LabelSlotProps) {
+  return (
+    <label htmlFor={htmlFor} className="text-xs font-bold uppercase tracking-widest">
+      {children}
+      {required ? <span aria-hidden="true"> *</span> : null}
+    </label>
+  )
+}
+
+<TextField
+  name="email"
+  label="Email"
+  slots={{ Label: UpperLabel }}
+/>
+```
