@@ -1,4 +1,180 @@
 ---
 title: RadioGroupField
-description: Radio button group for selecting a single option
+description: Radio button group for selecting a single option from a list
 ---
+
+import { RadioGroupField } from '@/components/ClientFields'
+
+`RadioGroupField` renders a labeled, accessible `<fieldset role="radiogroup">` connected to the active form adapter via context. Error and hint states surface automatically — no prop wiring needed.
+
+<Preview>
+  <RadioGroupField
+    name="preview-role"
+    label="Select your role"
+    options={[
+      { value: 'user', label: 'User' },
+      { value: 'admin', label: 'Administrator' },
+      { value: 'viewer', label: 'Viewer' },
+    ]}
+  />
+</Preview>
+
+## Props
+
+| Prop | Type | Required | Default | Description |
+|------|------|:--------:|---------|-------------|
+| `name` | `string` | yes | — | Field name. Used as the form state key and to derive element IDs. |
+| `label` | `string` | | — | Label text rendered as the fieldset legend. |
+| `hint` | `string` | | — | Helper text shown below the options when no error is present. |
+| `options` | `RadioOption<T>[]` | yes | — | Array of radio options. Each option has a `value`, `label`, optional `description`, and optional `disabled` flag. |
+| `orientation` | `'horizontal' \| 'vertical'` | | `'vertical'` | Layout direction of the radio group. |
+| `disabled` | `boolean` | | `false` | Disables all options. Inherits from `StackFormProvider` if not set. |
+| `loading` | `boolean` | | `false` | Replaces the options with a skeleton shimmer. |
+| `required` | `boolean` | | `false` | Marks the field as required. Appends `*` to the label. |
+| `classNames` | `RadioGroupFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
+| `slots` | `RadioGroupFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
+| `slotProps` | `Partial<BaseFieldSlotProps> & Partial<{ option: Partial<RadioOptionSlotProps> }>` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `onValueChange` | `(value: T) => void` | | — | Called after `onChange` with the new value. |
+| `validate` | `(value: T) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
+
+### RadioOption
+
+Each item in the `options` array follows this interface:
+
+```tsx
+interface RadioOption<T = string> {
+  value: T
+  label: string
+  description?: string   // Optional sub-label below the option label
+  disabled?: boolean     // Disables this individual option
+}
+```
+
+## Slots
+
+| Slot | Prop interface | Description |
+|------|---------------|-------------|
+| `Wrapper` | `WrapperSlotProps` | Outer container element |
+| `Label` | `LabelSlotProps` | Renders as the fieldset `<legend>`. Note: the fieldset's `aria-labelledby` reference will be unresolved when this slot is used. |
+| `Option` | `RadioOptionSlotProps` | Individual radio option container |
+| `Error` | `ErrorSlotProps` | Error message |
+| `Hint` | `HintSlotProps` | Hint/helper text |
+
+## classNames
+
+| Key | Applied to |
+|-----|-----------|
+| `wrapper` | Outer container |
+| `label` | Fieldset legend |
+| `input` | (Base class, unused in RadioGroupField) |
+| `error` | Error message |
+| `hint` | Hint text |
+| `option` | Individual radio option wrapper |
+| `optionLabel` | Radio option label text |
+| `optionDescription` | Radio option description text |
+| `group` | Fieldset element |
+
+## Examples
+
+### With error
+
+Errors surface automatically from the form adapter. Trigger one manually to test:
+
+```tsx
+form.setError('role', { message: 'Please select a role' })
+
+<RadioGroupField
+  name="role"
+  label="Select your role"
+  options={[
+    { value: 'user', label: 'User' },
+    { value: 'admin', label: 'Administrator' },
+    { value: 'viewer', label: 'Viewer' },
+  ]}
+/>
+```
+
+### With hint
+
+```tsx
+<RadioGroupField
+  name="newsletter"
+  label="Newsletter preference"
+  hint="Choose how often you'd like to receive updates."
+  options={[
+    { value: 'weekly', label: 'Weekly' },
+    { value: 'monthly', label: 'Monthly' },
+    { value: 'never', label: 'Never' },
+  ]}
+/>
+```
+
+### Horizontal layout
+
+```tsx
+<RadioGroupField
+  name="size"
+  label="Select size"
+  orientation="horizontal"
+  options={[
+    { value: 'small', label: 'Small' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'large', label: 'Large' },
+  ]}
+/>
+```
+
+### With descriptions and a disabled option
+
+```tsx
+<RadioGroupField
+  name="plan"
+  label="Choose a plan"
+  options={[
+    {
+      value: 'basic',
+      label: 'Basic',
+      description: 'Perfect for getting started.',
+    },
+    {
+      value: 'pro',
+      label: 'Professional',
+      description: 'For growing teams.',
+    },
+    {
+      value: 'enterprise',
+      label: 'Enterprise',
+      description: 'Custom solutions available.',
+      disabled: true,
+    },
+  ]}
+/>
+```
+
+### With slot override
+
+Replace the `Label` slot with a custom component. Slot components receive only display-level props.
+
+```tsx
+import type { LabelSlotProps } from '@stackform/ui'
+
+function CustomLabel({ htmlFor, children, required }: LabelSlotProps) {
+  return (
+    <legend className="text-lg font-semibold text-blue-700">
+      {children}
+      {required ? <span aria-hidden="true"> *</span> : null}
+    </legend>
+  )
+}
+
+<RadioGroupField
+  name="priority"
+  label="Set priority"
+  options={[
+    { value: 'low', label: 'Low' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'high', label: 'High' },
+  ]}
+  slots={{ Label: CustomLabel }}
+/>
+```
