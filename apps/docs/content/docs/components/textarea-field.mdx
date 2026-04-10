@@ -64,6 +64,26 @@ import { TextareaField } from '@/components/ClientFields'
 
 ## Examples
 
+### With error
+
+Errors surface automatically from the form adapter. Trigger one manually to test:
+
+```tsx
+form.setError('notes', { message: 'Notes are required' })
+
+<TextareaField name="notes" label="Notes" />
+```
+
+### With hint
+
+```tsx
+<TextareaField
+  name="notes"
+  label="Notes"
+  hint="Add any additional context for your request."
+/>
+```
+
 ### With character counter
 
 ```tsx
@@ -114,7 +134,7 @@ function CustomLabel({ htmlFor, children, required }: LabelSlotProps) {
   return (
     <label htmlFor={htmlFor} className="text-sm font-semibold text-blue-600">
       {children}
-      {required ? <span className="text-red-500 ml-1">*</span> : null}
+      {required ? <span aria-hidden="true" className="text-red-500 ml-1"> *</span> : null}
     </label>
   )
 }
