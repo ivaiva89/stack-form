@@ -1,4 +1,183 @@
 ---
 title: NumberField
-description: Numeric input field with optional min, max, and step
+description: Numeric input field with optional min, max, step, and increment/decrement stepper buttons
 ---
+
+import { NumberField } from '@/components/ClientFields'
+
+`NumberField` renders a labeled, accessible `<input type="number">` connected to the active form adapter via context. It supports optional stepper buttons, min/max bounds, and custom step values. Error and hint states surface automatically — no prop wiring needed.
+
+<Preview>
+  <NumberField
+    name="preview-quantity"
+    label="Quantity"
+    placeholder="0"
+    min={1}
+    max={100}
+    step={1}
+    showStepper
+  />
+</Preview>
+
+## Props
+
+| Prop | Type | Required | Default | Description |
+|------|------|:--------:|---------|-------------|
+| `name` | `string` | yes | — | Field name. Used as the form state key and to derive element IDs. |
+| `label` | `string` | | — | Label text rendered above the input. |
+| `hint` | `string` | | — | Helper text shown below the input when no error is present. |
+| `placeholder` | `string` | | — | Placeholder text for the input. |
+| `min` | `number` | | — | Minimum allowed value. Clamps stepper decrement. |
+| `max` | `number` | | — | Maximum allowed value. Clamps stepper increment. |
+| `step` | `number` | | `1` | Increment/decrement step size. Also applied to native stepper arrows. |
+| `showStepper` | `boolean` | | `false` | Shows increment/decrement buttons. |
+| `disabled` | `boolean` | | `false` | Disables the input. Inherits from `StackFormProvider` if not set. |
+| `loading` | `boolean` | | `false` | Replaces the input with a skeleton shimmer. |
+| `required` | `boolean` | | `false` | Marks the field as required. Appends `*` to the label. |
+| `format` | `Intl.NumberFormatOptions` | | — | Number formatting options (reserved for future use). |
+| `classNames` | `NumberFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
+| `slots` | `NumberFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
+| `slotProps` | `Partial<NumberFieldSlotProps>` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `onValueChange` | `(value: number) => void` | | — | Called after `onChange` with the new value. |
+| `validate` | `(value: number) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
+
+## Slots
+
+| Slot | Prop interface | Description |
+|------|---------------|-------------|
+| `Wrapper` | `WrapperSlotProps` | Outer container element |
+| `Label` | `LabelSlotProps` | Label element |
+| `Input` | `NumberInputSlotProps` | The `<input type="number">` element |
+| `Error` | `ErrorSlotProps` | Error message |
+| `Hint` | `HintSlotProps` | Hint/helper text |
+| `StepperIncrement` | `StepperButtonSlotProps` | Increment button |
+| `StepperDecrement` | `StepperButtonSlotProps` | Decrement button |
+
+## classNames
+
+| Key | Applied to |
+|-----|-----------|
+| `wrapper` | Outer container |
+| `label` | Label element |
+| `input` | Input element |
+| `error` | Error message |
+| `hint` | Hint text |
+| `stepperIncrement` | Increment button |
+| `stepperDecrement` | Decrement button |
+
+## Examples
+
+### With error
+
+Errors surface automatically from the form adapter. Trigger one manually to test:
+
+```tsx
+form.setError('price', { message: 'Price must be a valid number' })
+
+<NumberField name="price" label="Price" type="number" />
+```
+
+### With hint
+
+```tsx
+<NumberField
+  name="age"
+  label="Age"
+  hint="Enter your age in years."
+  min={0}
+  max={150}
+/>
+```
+
+### With min, max, and stepper
+
+```tsx
+<NumberField
+  name="quantity"
+  label="Quantity"
+  placeholder="1"
+  min={1}
+  max={100}
+  step={1}
+  showStepper
+/>
+```
+
+### With step and hint
+
+```tsx
+<NumberField
+  name="price"
+  label="Price (USD)"
+  placeholder="0.00"
+  step={0.01}
+  min={0}
+  hint="Enter price in dollars and cents."
+/>
+```
+
+### With custom stepper buttons
+
+Replace the default increment/decrement buttons with custom components:
+
+```tsx
+import type { StepperButtonSlotProps } from '@stackform/ui'
+
+function CustomStepperButton({
+  direction,
+  disabled,
+  onClick,
+  className,
+}: StepperButtonSlotProps) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`px-3 py-2 rounded font-semibold ${
+        disabled
+          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+          : 'bg-blue-600 text-white hover:bg-blue-700'
+      } ${className}`}
+    >
+      {direction === 'increment' ? '➕' : '➖'}
+    </button>
+  )
+}
+
+<NumberField
+  name="quantity"
+  label="Quantity"
+  min={1}
+  max={50}
+  showStepper
+  slots={{
+    StepperIncrement: CustomStepperButton,
+    StepperDecrement: CustomStepperButton,
+  }}
+/>
+```
+
+### With slot override for label
+
+Replace the `Label` slot with a custom component. Slot components receive only display-level props.
+
+```tsx
+import type { LabelSlotProps } from '@stackform/ui'
+
+function CustomLabel({ htmlFor, children, required }: LabelSlotProps) {
+  return (
+    <label htmlFor={htmlFor} className="text-sm font-semibold text-purple-600">
+      {children}
+      {required ? <span aria-hidden="true"> *</span> : null}
+    </label>
+  )
+}
+
+<NumberField
+  name="score"
+  label="Score"
+  min={0}
+  max={100}
+  slots={{ Label: CustomLabel }}
+/>
+```
