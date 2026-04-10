@@ -33,7 +33,7 @@ import { RadioGroupField } from '@/components/ClientFields'
 | `required` | `boolean` | | `false` | Marks the field as required. Appends `*` to the label. |
 | `classNames` | `RadioGroupFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
 | `slots` | `RadioGroupFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
-| `slotProps` | `Partial<BaseFieldSlotProps> & Partial<{ option: Partial<RadioOptionSlotProps> }>` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `slotProps` | `RadioGroupFieldSlotProps` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
 | `onValueChange` | `(value: T) => void` | | — | Called after `onChange` with the new value. |
 | `validate` | `(value: T) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
 
@@ -41,12 +41,12 @@ import { RadioGroupField } from '@/components/ClientFields'
 
 Each item in the `options` array follows this interface:
 
-```tsx
+```ts
 interface RadioOption<T = string> {
   value: T
   label: string
-  description?: string   // Optional sub-label below the option label
-  disabled?: boolean     // Disables this individual option
+  description?: string
+  disabled?: boolean
 }
 ```
 
