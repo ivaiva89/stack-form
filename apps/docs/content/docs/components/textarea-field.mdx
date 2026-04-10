@@ -1,4 +1,127 @@
 ---
 title: TextareaField
-description: Multi-line text input field
+description: Multi-line text input field with label, error, hint, character counter, and auto-resize
 ---
+
+import { TextareaField } from '@/components/ClientFields'
+
+`TextareaField` renders a labeled, accessible `<textarea>` connected to the active form adapter via context. Error and hint states surface automatically — no prop wiring needed.
+
+<Preview>
+  <TextareaField
+    name="preview-message"
+    label="Message"
+    placeholder="Enter your message here..."
+    hint="Be clear and concise."
+    rows={4}
+  />
+</Preview>
+
+## Props
+
+| Prop | Type | Required | Default | Description |
+|------|------|:--------:|---------|-------------|
+| `name` | `string` | yes | — | Field name. Used as the form state key and to derive element IDs. |
+| `label` | `string` | | — | Label text rendered above the textarea. |
+| `hint` | `string` | | — | Helper text shown below the textarea when no error is present. |
+| `placeholder` | `string` | | — | Placeholder text for the textarea. |
+| `rows` | `number` | | `3` | Initial number of visible rows. |
+| `maxRows` | `number` | | — | Maximum rows when `autoResize` is enabled. When reached, scrollbar appears. |
+| `maxLength` | `number` | | — | Maximum character count. Required when `showCount` is `true`. |
+| `showCount` | `boolean` | | `false` | Shows a character counter. Requires `maxLength`. |
+| `autoResize` | `boolean` | | `false` | Automatically grows/shrinks as content is entered. Use with `maxRows` to cap height. |
+| `resize` | `'none' \| 'vertical' \| 'horizontal' \| 'both'` | | `'vertical'` | CSS resize behavior. |
+| `disabled` | `boolean` | | `false` | Disables the textarea. Inherits from `StackFormProvider` if not set. |
+| `loading` | `boolean` | | `false` | Replaces the textarea with a skeleton shimmer. |
+| `required` | `boolean` | | `false` | Marks the field as required. Appends `*` to the label. |
+| `classNames` | `TextareaFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
+| `slots` | `TextareaFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
+| `slotProps` | `TextareaFieldSlotProps` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `onValueChange` | `(value: string) => void` | | — | Called after `onChange` with the new value. |
+| `validate` | `(value: string) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
+
+## Slots
+
+| Slot | Prop interface | Description |
+|------|---------------|-------------|
+| `Wrapper` | `WrapperSlotProps` | Outer container element |
+| `Label` | `LabelSlotProps` | Label element |
+| `Input` | `TextareaSlotProps` | The `<textarea>` element |
+| `Error` | `ErrorSlotProps` | Error message |
+| `Hint` | `HintSlotProps` | Hint/helper text |
+| `Counter` | `CounterSlotProps` | Character counter |
+
+## classNames
+
+| Key | Applied to |
+|-----|-----------|
+| `wrapper` | Outer container |
+| `label` | Label element |
+| `input` | Textarea element |
+| `error` | Error message |
+| `hint` | Hint text |
+| `counter` | Character counter |
+
+## Examples
+
+### With character counter
+
+```tsx
+<TextareaField
+  name="bio"
+  label="About you"
+  maxLength={500}
+  showCount
+  placeholder="Tell us about yourself..."
+/>
+```
+
+### Auto-resize with row cap
+
+Grows as the user types, but stops expanding at `maxRows`:
+
+```tsx
+<TextareaField
+  name="description"
+  label="Description"
+  placeholder="Enter details..."
+  autoResize
+  maxRows={8}
+/>
+```
+
+### Non-resizable
+
+Disable manual resizing by the user:
+
+```tsx
+<TextareaField
+  name="notes"
+  label="Notes"
+  resize="none"
+  rows={5}
+/>
+```
+
+### With slot override
+
+Replace the `Label` slot with a custom component. Slot components receive only display-level props.
+
+```tsx
+import type { LabelSlotProps } from '@stackform/ui'
+
+function CustomLabel({ htmlFor, children, required }: LabelSlotProps) {
+  return (
+    <label htmlFor={htmlFor} className="text-sm font-semibold text-blue-600">
+      {children}
+      {required ? <span className="text-red-500 ml-1">*</span> : null}
+    </label>
+  )
+}
+
+<TextareaField
+  name="feedback"
+  label="Feedback"
+  slots={{ Label: CustomLabel }}
+/>
+```
