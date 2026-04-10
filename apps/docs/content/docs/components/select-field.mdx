@@ -1,4 +1,188 @@
 ---
 title: SelectField
-description: Dropdown select field
+description: Dropdown select field with static or async options, search support, and grouping
 ---
+
+import { SelectField } from '@/components/ClientFields'
+
+`SelectField` renders a labeled, accessible `<select>` connected to the active form adapter via context. Error and hint states surface automatically — no prop wiring needed. Supports static options, async loading, search, and option grouping.
+
+<Preview>
+  <SelectField
+    name="preview-country"
+    label="Country"
+    placeholder="Select a country"
+    options={[
+      { value: 'us', label: 'United States' },
+      { value: 'uk', label: 'United Kingdom' },
+      { value: 'ca', label: 'Canada' },
+    ]}
+  />
+</Preview>
+
+## Props
+
+| Prop | Type | Required | Default | Description |
+|------|------|:--------:|---------|-------------|
+| `name` | `string` | yes | — | Field name. Used as the form state key and to derive element IDs. |
+| `label` | `string` | | — | Label text rendered above the select. |
+| `hint` | `string` | | — | Helper text shown below the select when no error is present. |
+| `placeholder` | `string` | | — | Placeholder text for the select trigger. |
+| `options` | `SelectOption<T>[]` | | — | Array of static options. Ignored when `loadOptions` is set. |
+| `loadOptions` | `(search: string) => Promise<SelectOption<T>[]>` | | — | Async function to fetch options. Called on mount (empty string) and on search input changes (debounced). |
+| `searchable` | `boolean` | | `false` | Renders a search input above the options list. |
+| `debounceMs` | `number` | | `300` | Debounce delay (ms) for `loadOptions` calls. |
+| `disabled` | `boolean` | | `false` | Disables the select. Inherits from `StackFormProvider` if not set. |
+| `loading` | `boolean` | | `false` | Replaces the select with a skeleton shimmer. |
+| `required` | `boolean` | | `false` | Marks the field as required. Appends `*` to the label. |
+| `classNames` | `SelectFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
+| `slots` | `SelectFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
+| `slotProps` | `SelectFieldSlotProps` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `onValueChange` | `(value: T) => void` | | — | Called after `onChange` with the new value. |
+| `validate` | `(value: T) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
+
+### SelectOption
+
+Each item in the `options` array follows this interface:
+
+```ts
+interface SelectOption<T = string> {
+  value: T
+  label: string
+  disabled?: boolean
+  group?: string
+}
+```
+
+## Slots
+
+| Slot | Prop interface | Description |
+|------|---------------|-------------|
+| `Wrapper` | `WrapperSlotProps` | Outer container element |
+| `Label` | `LabelSlotProps` | Label element |
+| `Trigger` | `SelectTriggerSlotProps` | The trigger/dropdown button element |
+| `Option` | `SelectOptionSlotProps` | Individual option element |
+| `Error` | `ErrorSlotProps` | Error message |
+| `Hint` | `HintSlotProps` | Hint/helper text |
+| `EmptyState` | `EmptyStateSlotProps` | Shown when options list is empty |
+| `LoadingState` | `LoadingStateSlotProps` | Shown while `loadOptions` is fetching |
+
+## classNames
+
+| Key | Applied to |
+|-----|-----------|
+| `wrapper` | Outer container |
+| `label` | Label element |
+| `input` | (Base class, unused in SelectField) |
+| `error` | Error message |
+| `hint` | Hint text |
+| `trigger` | The select trigger/dropdown button |
+| `option` | Individual option element |
+| `optionGroup` | Option group container |
+| `emptyState` | Empty state message |
+| `loadingState` | Loading state container |
+| `listbox` | Options list container |
+
+## Examples
+
+### With error
+
+Errors surface automatically from the form adapter. Trigger one manually to test:
+
+```tsx
+form.setError('category', { message: 'Please select a category' })
+
+<SelectField
+  name="category"
+  label="Category"
+  placeholder="Choose a category"
+  options={[
+    { value: 'tech', label: 'Technology' },
+    { value: 'health', label: 'Health' },
+    { value: 'finance', label: 'Finance' },
+  ]}
+/>
+```
+
+### With hint
+
+```tsx
+<SelectField
+  name="timezone"
+  label="Timezone"
+  hint="Your local timezone for scheduling."
+  placeholder="Select timezone"
+  options={[
+    { value: 'utc', label: 'UTC' },
+    { value: 'est', label: 'Eastern' },
+    { value: 'cst', label: 'Central' },
+    { value: 'pst', label: 'Pacific' },
+  ]}
+/>
+```
+
+### Static options with groups
+
+Use the `group` property to organize options under `<optgroup>` headers:
+
+```tsx
+<SelectField
+  name="location"
+  label="Office location"
+  options={[
+    { value: 'sf', label: 'San Francisco', group: 'North America' },
+    { value: 'nyc', label: 'New York', group: 'North America' },
+    { value: 'london', label: 'London', group: 'Europe' },
+    { value: 'paris', label: 'Paris', group: 'Europe' },
+  ]}
+/>
+```
+
+### Async options
+
+Use `loadOptions` to fetch options dynamically. The function is called on mount and on search input changes. Omit the `options` prop when using `loadOptions`:
+
+```tsx
+<SelectField
+  name="user"
+  label="Assign to user"
+  searchable
+  debounceMs={400}
+  loadOptions={async (search) => {
+    const res = await fetch(`/api/users?q=${encodeURIComponent(search)}`)
+    return res.json()
+  }}
+/>
+```
+
+### With slot override
+
+Replace the `EmptyState` slot with a custom component. Slot components receive only display-level props.
+
+```tsx
+import type { EmptyStateSlotProps } from '@stackform/ui'
+
+function CustomEmpty({ message, className }: EmptyStateSlotProps) {
+  return (
+    <div className={className}>
+      <p className="text-center text-sm text-gray-500">
+        No results found
+      </p>
+      <p className="text-center text-xs text-gray-400">
+        Try a different search term
+      </p>
+    </div>
+  )
+}
+
+<SelectField
+  name="search"
+  label="Search items"
+  searchable
+  loadOptions={async (search) => {
+    const res = await fetch(`/api/search?q=${search}`)
+    return res.json()
+  }}
+  slots={{ EmptyState: CustomEmpty }}
+/>
+```
