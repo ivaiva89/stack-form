@@ -74,7 +74,7 @@ Errors surface automatically from the form adapter. Trigger one manually to test
 ```tsx
 form.setError('price', { message: 'Price must be a valid number' })
 
-<NumberField name="price" label="Price" type="number" />
+<NumberField name="price" label="Price" />
 ```
 
 ### With hint
@@ -116,7 +116,7 @@ form.setError('price', { message: 'Price must be a valid number' })
 />
 ```
 
-### With custom stepper buttons
+### With slot override
 
 Replace the default increment/decrement buttons with custom components:
 
@@ -157,27 +157,3 @@ function CustomStepperButton({
 />
 ```
 
-### With slot override for label
-
-Replace the `Label` slot with a custom component. Slot components receive only display-level props.
-
-```tsx
-import type { LabelSlotProps } from '@stackform/ui'
-
-function CustomLabel({ htmlFor, children, required }: LabelSlotProps) {
-  return (
-    <label htmlFor={htmlFor} className="text-sm font-semibold text-purple-600">
-      {children}
-      {required ? <span aria-hidden="true"> *</span> : null}
-    </label>
-  )
-}
-
-<NumberField
-  name="score"
-  label="Score"
-  min={0}
-  max={100}
-  slots={{ Label: CustomLabel }}
-/>
-```
