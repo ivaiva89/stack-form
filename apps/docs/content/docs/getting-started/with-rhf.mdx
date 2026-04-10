@@ -110,13 +110,16 @@ form.setError('email', { message: 'Invalid email address' })
 
 ## Slot override example
 
-Replace any slot with a custom component by passing it to the `slots` prop:
+Replace any slot with a custom component. Slot components receive only display-level props and are unaware of the form library.
 
 ```tsx
-function BoldLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
+import type { LabelSlotProps } from '@stackform/ui'
+
+function BoldLabel({ htmlFor, children, required }: LabelSlotProps) {
   return (
     <label htmlFor={htmlFor} className="font-bold uppercase tracking-wide text-xs">
       {children}
+      {required ? <span aria-hidden="true"> *</span> : null}
     </label>
   )
 }
@@ -124,8 +127,6 @@ function BoldLabel({ htmlFor, children }: { htmlFor: string; children: React.Rea
 <TextField
   name="email"
   label="Email"
-  slots={{ label: BoldLabel }}
+  slots={{ Label: BoldLabel }}
 />
 ```
-
-Slot components receive only display-level props and are unaware of the form library.
