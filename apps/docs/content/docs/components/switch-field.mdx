@@ -1,4 +1,126 @@
 ---
 title: SwitchField
-description: Toggle switch field
+description: Accessible toggle switch field with label, error, hint, and flexible label positioning
 ---
+
+import { SwitchField } from '@/components/ClientFields'
+
+`SwitchField` renders a labeled, accessible toggle switch connected to the active form adapter via context. Error and hint states surface automatically — no prop wiring needed.
+
+<Preview>
+  <SwitchField
+    name="preview-notifications"
+    label="Enable notifications"
+    hint="Receive updates about your account."
+  />
+</Preview>
+
+## Props
+
+| Prop | Type | Required | Default | Description |
+|------|------|:--------:|---------|-------------|
+| `name` | `string` | yes | — | Field name. Used as the form state key and to derive element IDs. |
+| `label` | `string` | | — | Label text rendered next to the switch. |
+| `labelPosition` | `'left' \| 'right'` | | `'right'` | Position of the label relative to the switch input. |
+| `hint` | `string` | | — | Helper text shown below the switch when no error is present. |
+| `onLabel` | `string` | | `'On'` | Text rendered inside the switch when checked. |
+| `offLabel` | `string` | | `'Off'` | Text rendered inside the switch when unchecked. |
+| `size` | `'sm' \| 'md' \| 'lg'` | | — | Switch size. Applied via classNames from provider or field. |
+| `disabled` | `boolean` | | `false` | Disables the switch. Inherits from `StackFormProvider` if not set. |
+| `loading` | `boolean` | | `false` | Replaces the switch with a skeleton shimmer. |
+| `required` | `boolean` | | `false` | Marks the field as required. Appends `*` to the label. |
+| `classNames` | `SwitchFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
+| `slots` | `SwitchFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
+| `slotProps` | `SwitchFieldSlotProps` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `onValueChange` | `(value: boolean) => void` | | — | Called after `onChange` with the new value. |
+| `validate` | `(value: boolean) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
+
+## Slots
+
+| Slot | Prop interface | Description |
+|------|---------------|-------------|
+| `Wrapper` | `WrapperSlotProps` | Outer container element |
+| `Label` | `LabelSlotProps` | Label element |
+| `Input` | `SwitchSlotProps` | The switch button element |
+| `Error` | `ErrorSlotProps` | Error message |
+| `Hint` | `HintSlotProps` | Hint/helper text |
+
+## classNames
+
+| Key | Applied to |
+|-----|-----------|
+| `wrapper` | Outer container |
+| `label` | Label element |
+| `input` | Switch button element |
+| `error` | Error message |
+| `hint` | Hint text |
+
+## Examples
+
+### With error
+
+Errors surface automatically from the form adapter. Trigger one manually to test:
+
+```tsx
+form.setError('email-marketing', { message: 'This setting must be enabled' })
+
+<SwitchField name="email-marketing" label="Email marketing" />
+```
+
+### With hint
+
+```tsx
+<SwitchField
+  name="two-factor"
+  label="Two-factor authentication"
+  hint="Requires authentication with your phone when signing in."
+/>
+```
+
+### Custom on/off labels
+
+Override the default "On" and "Off" labels with custom text:
+
+```tsx
+<SwitchField
+  name="theme-mode"
+  label="Dark mode"
+  onLabel="Dark"
+  offLabel="Light"
+/>
+```
+
+### Label on the left
+
+Position the label before the switch:
+
+```tsx
+<SwitchField
+  name="auto-save"
+  label="Auto-save documents"
+  labelPosition="left"
+/>
+```
+
+### With slot override
+
+Replace the `Label` slot with a custom component. Slot components receive only display-level props.
+
+```tsx
+import type { LabelSlotProps } from '@stackform/ui'
+
+function BoldLabel({ htmlFor, children, required }: LabelSlotProps) {
+  return (
+    <label htmlFor={htmlFor} className="text-sm font-bold">
+      {children}
+      {required ? <span aria-hidden="true"> *</span> : null}
+    </label>
+  )
+}
+
+<SwitchField
+  name="notifications"
+  label="Enable notifications"
+  slots={{ Label: BoldLabel }}
+/>
+```
