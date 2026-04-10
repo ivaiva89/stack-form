@@ -1,4 +1,125 @@
 ---
 title: CheckboxField
-description: Boolean checkbox field
+description: Boolean checkbox field with label, error, hint, and flexible label positioning
 ---
+
+import { CheckboxField } from '@/components/ClientFields'
+
+`CheckboxField` renders a labeled, accessible `<input type="checkbox">` connected to the active form adapter via context. Error and hint states surface automatically — no prop wiring needed.
+
+<Preview>
+  <CheckboxField
+    name="preview-terms"
+    label="I agree to the terms and conditions"
+  />
+</Preview>
+
+## Props
+
+| Prop | Type | Required | Default | Description |
+|------|------|:--------:|---------|-------------|
+| `name` | `string` | yes | — | Field name. Used as the form state key and to derive element IDs. |
+| `label` | `string` | | — | Label text rendered next to the checkbox. |
+| `labelPosition` | `'left' \| 'right'` | | `'right'` | Position of the label relative to the checkbox input. |
+| `hint` | `string` | | — | Helper text shown below the checkbox when no error is present. |
+| `indeterminate` | `boolean` | | `false` | Sets the checkbox to an indeterminate state. Sets `aria-checked="mixed"`. Useful for "select all" patterns. |
+| `disabled` | `boolean` | | `false` | Disables the checkbox. Inherits from `StackFormProvider` if not set. |
+| `loading` | `boolean` | | `false` | Replaces the checkbox with a skeleton shimmer. |
+| `required` | `boolean` | | `false` | Marks the field as required. Appends `*` to the label. |
+| `classNames` | `CheckboxFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
+| `slots` | `CheckboxFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
+| `slotProps` | `CheckboxFieldSlotProps` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `onValueChange` | `(value: boolean) => void` | | — | Called after `onChange` with the new value. |
+| `validate` | `(value: boolean) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
+
+## Slots
+
+| Slot | Prop interface | Description |
+|------|---------------|-------------|
+| `Wrapper` | `WrapperSlotProps` | Outer container element |
+| `Label` | `LabelSlotProps` | Label element |
+| `Input` | `CheckboxSlotProps` | The `<input type="checkbox">` element |
+| `Error` | `ErrorSlotProps` | Error message |
+| `Hint` | `HintSlotProps` | Hint/helper text |
+
+## classNames
+
+| Key | Applied to |
+|-----|-----------|
+| `wrapper` | Outer container |
+| `label` | Label element |
+| `input` | Checkbox input element |
+| `error` | Error message |
+| `hint` | Hint text |
+
+## Examples
+
+### With error
+
+Errors surface automatically from the form adapter. Trigger one manually to test:
+
+```tsx
+form.setError('terms', { message: 'You must accept the terms' })
+
+<CheckboxField name="terms" label="I accept the terms and conditions" />
+```
+
+### With hint
+
+```tsx
+<CheckboxField
+  name="newsletter"
+  label="Subscribe to our newsletter"
+  hint="Receive updates and offers weekly."
+/>
+```
+
+### Indeterminate state
+
+Useful for "select all" patterns where a parent checkbox controls multiple children:
+
+```tsx
+const allChecked = childA && childB && childC
+const isIndeterminate = !allChecked && (childA || childB || childC)
+
+<CheckboxField
+  name="select-all"
+  label="Select all items"
+  indeterminate={isIndeterminate}
+/>
+```
+
+### Label on the left
+
+Position the label before the checkbox:
+
+```tsx
+<CheckboxField
+  name="subscribe"
+  label="Subscribe to updates"
+  labelPosition="left"
+/>
+```
+
+### With slot override
+
+Replace the `Label` slot with a custom component. Slot components receive only display-level props.
+
+```tsx
+import type { LabelSlotProps } from '@stackform/ui'
+
+function CustomLabel({ htmlFor, children, required }: LabelSlotProps) {
+  return (
+    <label htmlFor={htmlFor} className="text-sm font-medium text-gray-700">
+      {children}
+      {required ? <span aria-hidden="true"> *</span> : null}
+    </label>
+  )
+}
+
+<CheckboxField
+  name="email-alerts"
+  label="Receive email alerts"
+  slots={{ Label: CustomLabel }}
+/>
+```
