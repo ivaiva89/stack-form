@@ -61,24 +61,23 @@ For production forms with complex validation, async submission, or field arrays,
 
 ## Validation
 
-The native adapter does not include a built-in validation runner. Validation runs on `blur`: call `form.setFieldError(name, message)` in your blur handler to set an error, or `form.setFieldError(name, undefined)` to clear it.
+The native adapter does not include a built-in validation runner. Use the `validate` prop to attach a field-level validator — it runs on blur and returns an error string or `undefined`:
 
 ```tsx
 <TextField
   name="email"
   label="Email"
-  slotProps={{
-    input: {
-      onBlur: () => {
-        if (!form.values.email.includes('@')) {
-          form.setFieldError('email', 'Enter a valid email address')
-        } else {
-          form.setFieldError('email', undefined)
-        }
-      },
-    },
+  validate={(value) => {
+    if (!value.includes('@')) return 'Enter a valid email address'
   }}
 />
 ```
 
-Errors set via `setFieldError` surface automatically in the field's error slot — no additional prop wiring needed.
+To set or clear errors imperatively (e.g. from an async check), use `form.setFieldError`:
+
+```tsx
+form.setFieldError('email', 'This email is already registered')
+form.setFieldError('email', undefined) // clears the error
+```
+
+Errors surface automatically in the field's error slot — no additional prop wiring needed.
