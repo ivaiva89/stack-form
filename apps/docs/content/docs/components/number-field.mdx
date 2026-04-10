@@ -34,10 +34,10 @@ import { NumberField } from '@/components/ClientFields'
 | `disabled` | `boolean` | | `false` | Disables the input. Inherits from `StackFormProvider` if not set. |
 | `loading` | `boolean` | | `false` | Replaces the input with a skeleton shimmer. |
 | `required` | `boolean` | | `false` | Marks the field as required. Appends `*` to the label. |
-| `format` | `Intl.NumberFormatOptions` | | — | Number formatting options (reserved for future use). |
+| `format` | `Intl.NumberFormatOptions` | | — | Number formatting options. Reserved — not applied to the native input in the current release. |
 | `classNames` | `NumberFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
 | `slots` | `NumberFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
-| `slotProps` | `Partial<NumberFieldSlotProps>` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `slotProps` | `NumberFieldSlotProps` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
 | `onValueChange` | `(value: number) => void` | | — | Called after `onChange` with the new value. |
 | `validate` | `(value: number) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
 
@@ -118,28 +118,21 @@ form.setError('price', { message: 'Price must be a valid number' })
 
 ### With slot override
 
-Replace the default increment/decrement buttons with custom components:
+Replace the default increment/decrement buttons with custom components. Slot components receive only display-level props.
 
 ```tsx
 import type { StepperButtonSlotProps } from '@stackform/ui'
 
-function CustomStepperButton({
-  direction,
-  disabled,
-  onClick,
-  className,
-}: StepperButtonSlotProps) {
+function StepButton({ direction, onClick, disabled, className }: StepperButtonSlotProps) {
   return (
     <button
+      type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`px-3 py-2 rounded font-semibold ${
-        disabled
-          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-          : 'bg-blue-600 text-white hover:bg-blue-700'
-      } ${className}`}
+      aria-label={direction === 'increment' ? 'Increase value' : 'Decrease value'}
+      className={className}
     >
-      {direction === 'increment' ? '➕' : '➖'}
+      <span aria-hidden="true">{direction === 'increment' ? '+' : '−'}</span>
     </button>
   )
 }
@@ -147,13 +140,9 @@ function CustomStepperButton({
 <NumberField
   name="quantity"
   label="Quantity"
-  min={1}
-  max={50}
+  min={0}
   showStepper
-  slots={{
-    StepperIncrement: CustomStepperButton,
-    StepperDecrement: CustomStepperButton,
-  }}
+  slots={{ StepperIncrement: StepButton, StepperDecrement: StepButton }}
 />
 ```
 
