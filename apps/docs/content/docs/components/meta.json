@@ -1,0 +1,12 @@
+{
+  "title": "Components",
+  "pages": [
+    "text-field",
+    "textarea-field",
+    "number-field",
+    "checkbox-field",
+    "switch-field",
+    "radio-group-field",
+    "select-field"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "name": "@stackform/docs",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "fumadocs-core": "^15.2.0",
+    "fumadocs-mdx": "^11.6.0",
+    "fumadocs-ui": "^15.2.0",
+    "next": "^15.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hook-form": "^7.57.0",
+    "@radix-ui/react-label": "^2.1.7",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.0"
+  },
+  "devDependencies": {
+    "@stackform/core": "workspace:*",
+    "@stackform/rhf": "workspace:*",
+    "@stackform/ui": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.5",
+    "@types/mdx": "^2.0.13",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "tailwindcss": "^4.1.5",
+    "typescript": "^5.0.0"
+  }
+}
