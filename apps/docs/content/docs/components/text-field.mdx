@@ -34,7 +34,7 @@ import { TextField } from '@/components/ClientFields'
 | `suffix` | `ReactNode` | | — | Content rendered after the input (e.g. a currency symbol). |
 | `classNames` | `TextFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
 | `slots` | `TextFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
-| `slotProps` | `TextFieldSlotProps` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `slotProps` | `{ wrapper?, label?, input?, error?, hint?, prefix?, suffix?, counter? }` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
 | `onValueChange` | `(value: string) => void` | | — | Called after `onChange` with the new value. |
 | `validate` | `(value: string) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
 

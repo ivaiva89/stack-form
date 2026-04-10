@@ -37,7 +37,7 @@ import { NumberField } from '@/components/ClientFields'
 | `format` | `Intl.NumberFormatOptions` | | — | Number formatting options. Reserved — not applied to the native input in the current release. |
 | `classNames` | `NumberFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
 | `slots` | `NumberFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
-| `slotProps` | `NumberFieldSlotProps` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `slotProps` | `{ wrapper?, label?, input?, error?, hint? }` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
 | `onValueChange` | `(value: number) => void` | | — | Called after `onChange` with the new value. |
 | `validate` | `(value: number) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
 

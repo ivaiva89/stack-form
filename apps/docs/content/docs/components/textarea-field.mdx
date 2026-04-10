@@ -36,7 +36,7 @@ import { TextareaField } from '@/components/ClientFields'
 | `required` | `boolean` | | `false` | Marks the field as required. Appends `*` to the label. |
 | `classNames` | `TextareaFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
 | `slots` | `TextareaFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
-| `slotProps` | `TextareaFieldSlotProps` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `slotProps` | `{ wrapper?, label?, input?, error?, hint?, counter? }` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
 | `onValueChange` | `(value: string) => void` | | — | Called after `onChange` with the new value. |
 | `validate` | `(value: string) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
 

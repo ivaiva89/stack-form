@@ -31,7 +31,7 @@ import { SwitchField } from '@/components/ClientFields'
 | `required` | `boolean` | | `false` | Marks the field as required. Appends `*` to the label. |
 | `classNames` | `SwitchFieldClassNames` | | — | Tailwind class overrides per slot. Stacks with provider and core classes. |
 | `slots` | `SwitchFieldSlots` | | — | Component overrides per slot. First non-null wins: field → provider → default. |
-| `slotProps` | `SwitchFieldSlotProps` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
+| `slotProps` | `{ wrapper?, label?, input?, error?, hint? }` | | — | Extra props passed to each slot. Field-level replaces provider-level per key. |
 | `onValueChange` | `(value: boolean) => void` | | — | Called after `onChange` with the new value. |
 | `validate` | `(value: boolean) => string \| undefined \| Promise<string \| undefined>` | | — | Field-level validator. Runs on blur. |
 
