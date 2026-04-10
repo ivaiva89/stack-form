@@ -5,7 +5,7 @@ description: Dropdown select field with static or async options, search support,
 
 import { SelectField } from '@/components/ClientFields'
 
-`SelectField` renders a labeled, accessible `<select>` connected to the active form adapter via context. Error and hint states surface automatically — no prop wiring needed. Supports static options, async loading, search, and option grouping.
+`SelectField` renders a labeled `<select>` by default, connected to the active form adapter via context. The trigger can be replaced with a custom component via the `Trigger` slot. Error and hint states surface automatically — no prop wiring needed.
 
 <Preview>
   <SelectField
@@ -73,7 +73,7 @@ interface SelectOption<T = string> {
 |-----|-----------|
 | `wrapper` | Outer container |
 | `label` | Label element |
-| `input` | (Base class, unused in SelectField) |
+| `input` | Native select element (base class inherited from field wrapper) |
 | `error` | Error message |
 | `hint` | Hint text |
 | `trigger` | The select trigger/dropdown button |
