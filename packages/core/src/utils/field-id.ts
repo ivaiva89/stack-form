@@ -12,6 +12,6 @@ export function toDescribedBy(
 ): string {
   const parts: string[] = []
   if (opts.hasError) parts.push(`${id}-error`)
-  if (opts.hasHint) parts.push(`${id}-hint`)
+  if (opts.hasHint && !opts.hasError) parts.push(`${id}-hint`)
   return parts.join(' ')
 }
