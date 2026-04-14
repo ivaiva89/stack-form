@@ -17,11 +17,15 @@ interface TanstackResolverResult {
 
 interface TanstackFormProviderProps {
   form: AnyFormApi
+  formId?: string
+  disabled?: boolean
   children: ReactNode
 }
 
 export function TanstackFormProvider({
   form,
+  formId,
+  disabled = false,
   children,
 }: TanstackFormProviderProps): ReactNode {
   const isSubmitting = useStore(form.store, (state) => state.isSubmitting)
@@ -33,9 +37,9 @@ export function TanstackFormProvider({
       isSubmitted: false,
       isValid: !canSubmit === false,
       isDirty: false,
-      disabled: false,
+      disabled,
     }),
-    [isSubmitting, canSubmit]
+    [isSubmitting, canSubmit, disabled]
   )
 
   const resolver = useCallback(
@@ -49,9 +53,10 @@ export function TanstackFormProvider({
       resolver,
       formState,
       adapterType: 'tanstack' as const,
+      formId,
       useFieldHook: useTanstackFieldInternal,
     }),
-    [resolver, formState]
+    [resolver, formState, formId]
   )
 
   return (

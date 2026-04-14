@@ -4,6 +4,7 @@ import { runAdd } from './commands/add.js'
 import { runConfigGet, runConfigList, runConfigSet } from './commands/config.js'
 import { runDiff } from './commands/diff.js'
 import { runInit } from './commands/init.js'
+import { runUpdate } from './commands/update.js'
 import { log } from './utils/logger.js'
 
 const require = createRequire(import.meta.url)
@@ -55,6 +56,19 @@ program
   .action(async (component: string | undefined) => {
     try {
       await runDiff(component)
+    } catch (err) {
+      log.error(err instanceof Error ? err.message : String(err))
+      process.exit(1)
+    }
+  })
+
+program
+  .command('update')
+  .description('Update a local component to the latest registry version')
+  .argument('[component]', 'Component name to update')
+  .action(async (component: string | undefined) => {
+    try {
+      await runUpdate(component)
     } catch (err) {
       log.error(err instanceof Error ? err.message : String(err))
       process.exit(1)

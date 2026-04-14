@@ -4,6 +4,7 @@ import { createTwoFilesPatch } from 'diff'
 import * as fs from 'fs-extra'
 import * as path from 'node:path'
 import { readConfig } from '../lib/config.js'
+import { computeThreeWayDiff } from '../lib/diff-engine.js'
 import {
   fetchComponentFile,
   fetchManifest,
@@ -63,7 +64,17 @@ export async function runDiff(
   }
 
   const latestVersion = resolveLatestVersion(manifest, selectedComponent)
-  let allUpToDate = true
+  const installedVersion =
+    config.installed?.[selectedComponent] ??
+    entry.versions[entry.versions.length - 1]
+
+  if (latestVersion === installedVersion) {
+    clack.outro(`${selectedComponent} — up to date (${latestVersion})`)
+    return
+  }
+
+  let totalSafe = 0
+  let totalConflicts = 0
 
   for (const file of entry.files) {
     const localPath = path.resolve(
@@ -78,11 +89,23 @@ export async function runDiff(
       continue
     }
 
-    const localContent = await fs.readFile(localPath, 'utf-8')
+    const yours = await fs.readFile(localPath, 'utf-8')
 
-    let latestContent: string
+    let base: string
     try {
-      latestContent = await fetchComponentFile(
+      base = await fetchComponentFile(
+        config.registryUrl,
+        selectedComponent,
+        installedVersion,
+        file
+      )
+    } catch {
+      base = yours
+    }
+
+    let theirs: string
+    try {
+      theirs = await fetchComponentFile(
         config.registryUrl,
         selectedComponent,
         latestVersion,
@@ -95,31 +118,63 @@ export async function runDiff(
       continue
     }
 
-    if (localContent === latestContent) {
+    const { safeChanges, conflicts } = computeThreeWayDiff(base, theirs, yours)
+
+    if (safeChanges.length === 0 && conflicts.length === 0) {
       log.info(`${path.join(selectedComponent, file)} — up to date`)
       continue
     }
 
-    allUpToDate = false
+    totalSafe += safeChanges.length
+    totalConflicts += conflicts.length
 
-    const installedVersion =
-      config.installed?.[selectedComponent] ??
-      entry.versions[entry.versions.length - 1]
+    const filePath = path.join(selectedComponent, file)
 
-    const patch = createTwoFilesPatch(
-      `local/${path.join(selectedComponent, file)}`,
-      `registry/${path.join(selectedComponent, file)} (${latestVersion}, installed: ${installedVersion})`,
-      localContent,
-      latestContent
-    )
+    if (safeChanges.length > 0) {
+      const patch = createTwoFilesPatch(
+        `installed/${filePath} (${installedVersion})`,
+        `registry/${filePath} (${latestVersion})`,
+        base,
+        theirs
+      )
+      process.stdout.write(
+        chalk.bold(`\n${filePath} — ${safeChanges.length} safe change(s)\n`) +
+          colorDiff(patch) +
+          '\n'
+      )
+    }
 
-    process.stdout.write(colorDiff(patch) + '\n')
+    if (conflicts.length > 0) {
+      process.stdout.write(
+        chalk.red.bold(
+          `\n${filePath} — ${conflicts.length} conflict(s) (you and the registry both changed these regions)\n`
+        )
+      )
+      for (const conflict of conflicts) {
+        process.stdout.write(
+          chalk.dim(`  base:   `) +
+            conflict.base.replace(/\n$/, '') +
+            '\n' +
+            chalk.green(`  theirs: `) +
+            conflict.theirs.replace(/\n$/, '') +
+            '\n' +
+            chalk.yellow(`  yours:  `) +
+            conflict.yours.replace(/\n$/, '') +
+            '\n\n'
+        )
+      }
+    }
   }
 
-  if (allUpToDate) {
+  if (totalSafe === 0 && totalConflicts === 0) {
     clack.outro(`${selectedComponent} — up to date`)
   } else {
-    clack.outro('Diff complete. Review changes above before upgrading.')
+    const parts: string[] = []
+    if (totalSafe > 0) parts.push(`${totalSafe} safe change(s)`)
+    if (totalConflicts > 0) parts.push(`${totalConflicts} conflict(s)`)
+    clack.outro(
+      `${selectedComponent}: ${parts.join(', ')}. Run \`stackform update ${selectedComponent}\` to apply.`
+    )
   }
 }
 

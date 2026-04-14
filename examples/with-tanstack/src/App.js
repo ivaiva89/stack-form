@@ -1,0 +1,17 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useForm } from '@tanstack/react-form';
+import { StackFormProvider, TextField, CheckboxField } from '@stackform/ui';
+import { TanstackFormProvider } from '@stackform/tanstack';
+export function App() {
+    const form = useForm({
+        defaultValues: { name: '', email: '', terms: false },
+        onSubmit: async ({ value }) => {
+            console.log('Submitted:', value);
+        },
+    });
+    return (_jsxs("div", { className: "mx-auto max-w-md p-8", children: [_jsx("h1", { className: "mb-6 text-2xl font-bold", children: "StackForm + TanStack Form" }), _jsx(StackFormProvider, { children: _jsx(TanstackFormProvider, { form: form, children: _jsxs("form", { onSubmit: (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            form.handleSubmit();
+                        }, className: "space-y-4", children: [_jsx(TextField, { name: "name", label: "Name", placeholder: "Your name" }), _jsx(TextField, { name: "email", label: "Email", type: "email", placeholder: "you@example.com", hint: "We'll never share your email." }), _jsx(CheckboxField, { name: "terms", label: "I agree to the terms and conditions" }), _jsx("button", { type: "submit", disabled: form.state.isSubmitting, className: "rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50", children: form.state.isSubmitting ? 'Submitting…' : 'Submit' })] }) }) })] }));
+}

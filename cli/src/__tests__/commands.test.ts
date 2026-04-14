@@ -15,6 +15,8 @@ import {
 } from '../commands/config.js'
 import { runDiff } from '../commands/diff.js'
 import { runInit } from '../commands/init.js'
+import { runUpdate } from '../commands/update.js'
+import { applyThreeWayMerge, computeThreeWayDiff } from '../lib/diff-engine.js'
 
 vi.mock('@clack/prompts', () => ({
   intro: vi.fn(),
@@ -258,26 +260,34 @@ describe('add', () => {
 // purpose is to display output, not write files. File system state (local files)
 // is pre-established as real on-disk content in each test.
 
+const TWO_VERSION_MANIFEST = {
+  components: {
+    'text-field': {
+      versions: ['2.0.0', '1.0.0'],
+      files: ['index.tsx'],
+    },
+  },
+}
+
 describe('diff', () => {
   beforeEach(async () => {
     await fs.writeJson(path.join(tmpDir, 'package.json'), { name: 'test' })
-    await fs.writeJson(path.join(tmpDir, 'stackform.json'), BASE_CONFIG)
+    await fs.writeJson(path.join(tmpDir, 'stackform.json'), {
+      ...BASE_CONFIG,
+      installed: { 'text-field': '1.0.0' },
+    })
   })
 
-  it('reports up to date when local file matches registry', async () => {
-    const content = 'export const TextField = () => null'
-    const localPath = path.join(
-      tmpDir,
-      'src/components/form/text-field/index.tsx'
-    )
-    await fs.ensureDir(path.dirname(localPath))
-    await fs.writeFile(localPath, content, 'utf-8')
+  it('reports up to date when installed is already the latest version', async () => {
+    await fs.writeJson(path.join(tmpDir, 'stackform.json'), {
+      ...BASE_CONFIG,
+      installed: { 'text-field': '1.0.0' },
+    })
 
     vi.stubGlobal(
       'fetch',
       makeFetchMock({
         'manifest.json': MANIFEST,
-        'text-field/1.0.0/index.tsx': content,
       })
     )
 
@@ -288,19 +298,21 @@ describe('diff', () => {
     )
   })
 
-  it('writes diff patch to stdout when local file differs from registry', async () => {
+  it('shows safe change patch on stdout when yours is unmodified relative to base', async () => {
     const localPath = path.join(
       tmpDir,
       'src/components/form/text-field/index.tsx'
     )
     await fs.ensureDir(path.dirname(localPath))
-    await fs.writeFile(localPath, 'old content line', 'utf-8')
+    // yours === base → theirs change is safe
+    await fs.writeFile(localPath, 'old content line\n', 'utf-8')
 
     vi.stubGlobal(
       'fetch',
       makeFetchMock({
-        'manifest.json': MANIFEST,
-        'text-field/1.0.0/index.tsx': 'new content line',
+        'manifest.json': TWO_VERSION_MANIFEST,
+        'text-field/1.0.0/index.tsx': 'old content line\n',
+        'text-field/2.0.0/index.tsx': 'new content line\n',
       })
     )
 
@@ -313,6 +325,36 @@ describe('diff', () => {
     const written = stdoutSpy.mock.calls.map((c) => String(c[0])).join('')
     expect(written).toMatch(/old content line/)
     expect(written).toMatch(/new content line/)
+
+    stdoutSpy.mockRestore()
+  })
+
+  it('shows conflict on stdout when both sides changed the same region', async () => {
+    const localPath = path.join(
+      tmpDir,
+      'src/components/form/text-field/index.tsx'
+    )
+    await fs.ensureDir(path.dirname(localPath))
+    // yours differs from base in the same region as theirs
+    await fs.writeFile(localPath, 'YOURS\n', 'utf-8')
+
+    vi.stubGlobal(
+      'fetch',
+      makeFetchMock({
+        'manifest.json': TWO_VERSION_MANIFEST,
+        'text-field/1.0.0/index.tsx': 'base content\n',
+        'text-field/2.0.0/index.tsx': 'THEIRS\n',
+      })
+    )
+
+    const stdoutSpy = vi
+      .spyOn(process.stdout, 'write')
+      .mockImplementation(() => true)
+
+    await runDiff('text-field', tmpDir)
+
+    const written = stdoutSpy.mock.calls.map((c) => String(c[0])).join('')
+    expect(written).toMatch(/conflict/)
 
     stdoutSpy.mockRestore()
   })
@@ -364,5 +406,230 @@ describe('config', () => {
     await expect(runConfigGet('invalidKey', tmpDir)).rejects.toThrow(
       'Unknown config key'
     )
+  })
+})
+
+// ─── computeThreeWayDiff ─────────────────────────────────────────────────────
+
+describe('computeThreeWayDiff', () => {
+  it('returns empty when base equals theirs (no registry changes)', () => {
+    const base = 'line1\nline2\n'
+    const result = computeThreeWayDiff(base, base, 'line1\nmodified\n')
+    expect(result.safeChanges).toHaveLength(0)
+    expect(result.conflicts).toHaveLength(0)
+  })
+
+  it('returns empty when yours equals theirs (already up to date)', () => {
+    const theirs = 'line1\nline2\n'
+    const result = computeThreeWayDiff('line1\nold\n', theirs, theirs)
+    expect(result.safeChanges).toHaveLength(0)
+    expect(result.conflicts).toHaveLength(0)
+  })
+
+  it('all theirs changes are safe when yours equals base (unmodified local)', () => {
+    const base = 'line1\nline2\n'
+    const theirs = 'LINE1\nline2\n'
+    const result = computeThreeWayDiff(base, theirs, base)
+    expect(result.safeChanges).toHaveLength(1)
+    expect(result.safeChanges[0].content).toBe('LINE1\n')
+    expect(result.conflicts).toHaveLength(0)
+  })
+
+  it('theirs change is safe when yours changed a different region', () => {
+    const base = 'line1\nline2\nline3\n'
+    const theirs = 'LINE1\nline2\nline3\n'
+    const yours = 'line1\nLINE2\nline3\n'
+    const result = computeThreeWayDiff(base, theirs, yours)
+    expect(result.safeChanges).toHaveLength(1)
+    expect(result.safeChanges[0].content).toBe('LINE1\n')
+    expect(result.conflicts).toHaveLength(0)
+  })
+
+  it('reports conflict when both sides changed the same region', () => {
+    const base = 'line1\nline2\nline3\n'
+    const theirs = 'THEIRS\nline2\nline3\n'
+    const yours = 'YOURS\nline2\nline3\n'
+    const result = computeThreeWayDiff(base, theirs, yours)
+    expect(result.conflicts).toHaveLength(1)
+    expect(result.conflicts[0].theirs).toBe('THEIRS\n')
+    expect(result.conflicts[0].yours).toBe('YOURS\n')
+    expect(result.conflicts[0].base).toBe('line1\n')
+    expect(result.safeChanges).toHaveLength(0)
+  })
+})
+
+// ─── applyThreeWayMerge ───────────────────────────────────────────────────────
+
+describe('applyThreeWayMerge', () => {
+  it('returns yours unchanged when no registry changes', () => {
+    const base = 'line1\nline2\n'
+    const { output, hasConflicts } = applyThreeWayMerge(
+      base,
+      base,
+      'line1\nmodified\n'
+    )
+    expect(output).toBe('line1\nmodified\n')
+    expect(hasConflicts).toBe(false)
+  })
+
+  it('applies safe theirs change when yours is unmodified in that region', () => {
+    const base = 'line1\nline2\n'
+    const theirs = 'LINE1\nline2\n'
+    const { output, hasConflicts } = applyThreeWayMerge(base, theirs, base)
+    expect(output).toBe('LINE1\nline2\n')
+    expect(hasConflicts).toBe(false)
+  })
+
+  it('preserves yours-only change alongside safe theirs change', () => {
+    const base = 'line1\nline2\nline3\n'
+    const theirs = 'LINE1\nline2\nline3\n'
+    const yours = 'line1\nLINE2\nline3\n'
+    const { output, hasConflicts } = applyThreeWayMerge(base, theirs, yours)
+    expect(output).toBe('LINE1\nLINE2\nline3\n')
+    expect(hasConflicts).toBe(false)
+  })
+
+  it('writes conflict markers when both sides changed the same region', () => {
+    const base = 'line1\nline2\n'
+    const theirs = 'THEIRS\nline2\n'
+    const yours = 'YOURS\nline2\n'
+    const { output, hasConflicts } = applyThreeWayMerge(base, theirs, yours)
+    expect(hasConflicts).toBe(true)
+    expect(output).toContain('<<<<<<< theirs (registry)')
+    expect(output).toContain('THEIRS')
+    expect(output).toContain('=======')
+    expect(output).toContain('YOURS')
+    expect(output).toContain('>>>>>>> yours (local)')
+  })
+})
+
+// ─── update ──────────────────────────────────────────────────────────────────
+
+describe('update', () => {
+  beforeEach(async () => {
+    await fs.writeJson(path.join(tmpDir, 'package.json'), { name: 'test' })
+    await fs.writeJson(path.join(tmpDir, 'stackform.json'), {
+      ...BASE_CONFIG,
+      installed: { 'text-field': '1.0.0' },
+    })
+  })
+
+  it('applies safe changes and updates stackform.json installed version', async () => {
+    const localPath = path.join(
+      tmpDir,
+      'src/components/form/text-field/index.tsx'
+    )
+    await fs.ensureDir(path.dirname(localPath))
+    await fs.writeFile(localPath, 'line1\nline2\n', 'utf-8')
+
+    vi.stubGlobal(
+      'fetch',
+      makeFetchMock({
+        'manifest.json': {
+          components: {
+            'text-field': {
+              versions: ['2.0.0', '1.0.0'],
+              files: ['index.tsx'],
+            },
+          },
+        },
+        'text-field/1.0.0/index.tsx': 'line1\nline2\n',
+        'text-field/2.0.0/index.tsx': 'LINE1\nline2\n',
+      })
+    )
+
+    await runUpdate('text-field', tmpDir)
+
+    expect(await fs.readFile(localPath, 'utf-8')).toBe('LINE1\nline2\n')
+    const config = await fs.readJson(path.join(tmpDir, 'stackform.json'))
+    expect(config.installed['text-field']).toBe('2.0.0')
+  })
+
+  it('writes conflict markers when both sides changed the same region', async () => {
+    const localPath = path.join(
+      tmpDir,
+      'src/components/form/text-field/index.tsx'
+    )
+    await fs.ensureDir(path.dirname(localPath))
+    await fs.writeFile(localPath, 'YOURS\nline2\n', 'utf-8')
+
+    vi.stubGlobal(
+      'fetch',
+      makeFetchMock({
+        'manifest.json': {
+          components: {
+            'text-field': {
+              versions: ['2.0.0', '1.0.0'],
+              files: ['index.tsx'],
+            },
+          },
+        },
+        'text-field/1.0.0/index.tsx': 'line1\nline2\n',
+        'text-field/2.0.0/index.tsx': 'THEIRS\nline2\n',
+      })
+    )
+
+    await runUpdate('text-field', tmpDir)
+
+    const content = await fs.readFile(localPath, 'utf-8')
+    expect(content).toContain('<<<<<<< theirs (registry)')
+    expect(content).toContain('THEIRS')
+    expect(content).toContain('=======')
+    expect(content).toContain('YOURS')
+    expect(content).toContain('>>>>>>> yours (local)')
+  })
+
+  it('does nothing when already on the latest version', async () => {
+    await fs.writeJson(path.join(tmpDir, 'stackform.json'), {
+      ...BASE_CONFIG,
+      installed: { 'text-field': '1.0.0' },
+    })
+
+    vi.stubGlobal(
+      'fetch',
+      makeFetchMock({
+        'manifest.json': {
+          components: {
+            'text-field': { versions: ['1.0.0'], files: ['index.tsx'] },
+          },
+        },
+      })
+    )
+
+    await runUpdate('text-field', tmpDir)
+
+    expect(vi.mocked(clack.outro)).toHaveBeenCalledWith(
+      expect.stringContaining('already up to date')
+    )
+  })
+
+  it('updates stackform.json installed version after successful update', async () => {
+    const localPath = path.join(
+      tmpDir,
+      'src/components/form/text-field/index.tsx'
+    )
+    await fs.ensureDir(path.dirname(localPath))
+    await fs.writeFile(localPath, 'line1\nline2\n', 'utf-8')
+
+    vi.stubGlobal(
+      'fetch',
+      makeFetchMock({
+        'manifest.json': {
+          components: {
+            'text-field': {
+              versions: ['3.0.0', '1.0.0'],
+              files: ['index.tsx'],
+            },
+          },
+        },
+        'text-field/1.0.0/index.tsx': 'line1\nline2\n',
+        'text-field/3.0.0/index.tsx': 'line1\nLINE2\n',
+      })
+    )
+
+    await runUpdate('text-field', tmpDir)
+
+    const config = await fs.readJson(path.join(tmpDir, 'stackform.json'))
+    expect(config.installed['text-field']).toBe('3.0.0')
   })
 })
