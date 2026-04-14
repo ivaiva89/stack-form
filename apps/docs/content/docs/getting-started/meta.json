@@ -1,4 +1,4 @@
 {
   "title": "Getting Started",
-  "pages": ["index", "with-rhf", "with-tanstack", "with-native"]
+  "pages": ["index", "with-rhf", "with-tanstack", "with-native", "app-router"]
 }

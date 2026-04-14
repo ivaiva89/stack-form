@@ -1,3 +1,5 @@
+'use client'
+
 import { useStackFormContext } from '@stackform/core'
 import type { FieldState } from '@stackform/core'
 import { useNativeFormContext } from './native-form-context'

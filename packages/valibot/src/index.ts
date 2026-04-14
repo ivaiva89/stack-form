@@ -1,3 +1,5 @@
+'use client'
+
 import { useCallback, useMemo } from 'react'
 import type { BaseIssue, BaseSchema } from 'valibot'
 import * as v from 'valibot'

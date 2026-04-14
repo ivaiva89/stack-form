@@ -1,3 +1,5 @@
+'use client'
+
 import { useStackFormContext } from '@stackform/core'
 import type { CoreFormState } from '@stackform/core'
 

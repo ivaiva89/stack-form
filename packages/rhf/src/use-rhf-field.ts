@@ -1,3 +1,5 @@
+'use client'
+
 import { useController } from 'react-hook-form'
 import type { FieldValues, FieldPath, Control } from 'react-hook-form'
 import type { FieldState } from '@stackform/core'

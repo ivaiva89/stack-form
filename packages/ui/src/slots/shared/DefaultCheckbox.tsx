@@ -1,3 +1,5 @@
+'use client'
+
 import { useRef, useEffect } from 'react'
 import type { ReactNode } from 'react'
 import type { CheckboxSlotProps } from '@stackform/core'

@@ -1,0 +1,167 @@
+---
+title: Next.js App Router
+description: Using StackForm in Next.js App Router with React Server Components
+---
+
+## Overview
+
+StackForm is fully compatible with the Next.js App Router. All packages that use React hooks or browser APIs are marked with `'use client'`, so they work correctly at the client boundary. Type-only imports from these packages remain server-safe.
+
+---
+
+## How it works
+
+In the App Router, components are Server Components by default. Any component that uses React hooks must be a Client Component — either by adding `'use client'` directly, or by being imported from a file that already has it.
+
+StackForm marks the `'use client'` directive on every file that calls a hook, rather than on the package entry point. This means:
+
+- `import type { FieldState } from '@stackform/core'` — server-safe, no client boundary created
+- `import { TextField } from '@stackform/core'` — pulls in a client module, creates a boundary at import
+
+You never need to add `'use client'` yourself for StackForm components to work.
+
+---
+
+## Recommended pattern
+
+Create a thin client wrapper for your form, and keep the page itself as a Server Component.
+
+```tsx
+// app/contact/page.tsx  — Server Component
+import { ContactForm } from './contact-form'
+
+export default function ContactPage() {
+  return (
+    <main>
+      <h1>Contact</h1>
+      <ContactForm />
+    </main>
+  )
+}
+```
+
+```tsx
+// app/contact/contact-form.tsx  — Client Component
+'use client'
+
+import { useForm } from 'react-hook-form'
+import { RHFFormProvider, useRHFForm } from '@stackform/rhf'
+import { StackFormProvider } from '@stackform/ui'
+import { TextField } from '@stackform/core'
+
+export function ContactForm() {
+  const { form, FormProvider } = useRHFForm<{ email: string }>({
+    defaultValues: { email: '' },
+  })
+
+  return (
+    <FormProvider>
+      <StackFormProvider>
+        <form onSubmit={form.handleSubmit(console.log)}>
+          <TextField name="email" label="Email" />
+          <button type="submit">Send</button>
+        </form>
+      </StackFormProvider>
+    </FormProvider>
+  )
+}
+```
+
+The page fetches data on the server. The form is isolated in a single `'use client'` file. Everything inside `ContactForm` runs on the client.
+
+---
+
+## Which packages need `'use client'`
+
+The directive is already applied inside each package. You do not need to add it yourself. For reference, these are the files that carry `'use client'`:
+
+| Package | Files |
+|---------|-------|
+| `@stackform/core` | `stack-form-context.ts`, `slot-defaults-context.ts`, `use-validate.ts`, `use-field.ts`, `use-field-value.ts`, `use-field-renderers.tsx`, all field components |
+| `@stackform/ui` | `stack-form-provider.tsx`, `DefaultCheckbox.tsx` |
+| `@stackform/rhf` | `provider.tsx`, `use-rhf-field-internal.ts`, `use-rhf-field.ts`, `use-rhf-form-state.ts`, `use-rhf-form.ts` |
+| `@stackform/tanstack` | `provider.tsx`, `use-tanstack-field-internal.ts` |
+| `@stackform/native` | `native-form-context.ts`, `provider.tsx`, `use-native-field-internal.ts`, `use-native-form.ts` |
+| `@stackform/zod` | `index.ts` |
+| `@stackform/valibot` | `index.ts` |
+
+---
+
+## Passing server data into forms
+
+Server Components can fetch data and pass it down as props to a client form:
+
+```tsx
+// app/profile/page.tsx  — Server Component
+import { db } from '@/lib/db'
+import { ProfileForm } from './profile-form'
+
+export default async function ProfilePage() {
+  const user = await db.user.findUnique({ where: { id: '...' } })
+
+  return <ProfileForm defaultValues={{ name: user.name, email: user.email }} />
+}
+```
+
+```tsx
+// app/profile/profile-form.tsx  — Client Component
+'use client'
+
+import { useRHFForm } from '@stackform/rhf'
+import { StackFormProvider } from '@stackform/ui'
+import { TextField } from '@stackform/core'
+
+interface Props {
+  defaultValues: { name: string; email: string }
+}
+
+export function ProfileForm({ defaultValues }: Props) {
+  const { form, FormProvider } = useRHFForm({ defaultValues })
+
+  return (
+    <FormProvider>
+      <StackFormProvider>
+        <form onSubmit={form.handleSubmit(console.log)}>
+          <TextField name="name" label="Name" />
+          <TextField name="email" label="Email" />
+          <button type="submit">Save</button>
+        </form>
+      </StackFormProvider>
+    </FormProvider>
+  )
+}
+```
+
+Server data is fetched once on the server, serialised as props, and hydrated on the client. No data fetching happens inside the form component.
+
+---
+
+## Server Actions
+
+StackForm forms work with [Server Actions](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations) via the adapter's `handleSubmit`:
+
+```tsx
+'use client'
+
+import { useRHFForm } from '@stackform/rhf'
+import { StackFormProvider } from '@stackform/ui'
+import { TextField } from '@stackform/core'
+import { saveProfile } from './actions'
+
+export function ProfileForm() {
+  const { form, FormProvider } = useRHFForm<{ name: string }>({
+    defaultValues: { name: '' },
+  })
+
+  return (
+    <FormProvider>
+      <StackFormProvider>
+        <form action={saveProfile}>
+          <TextField name="name" label="Name" />
+          <button type="submit">Save</button>
+        </form>
+      </StackFormProvider>
+    </FormProvider>
+  )
+}
+```

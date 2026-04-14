@@ -1,3 +1,5 @@
+'use client'
+
 import { useField } from '@tanstack/react-form'
 import type { AnyFormApi } from '@tanstack/react-form'
 import { useStackFormContext } from '@stackform/core'

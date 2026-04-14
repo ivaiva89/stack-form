@@ -1,3 +1,5 @@
+'use client'
+
 import type { ReactNode, ComponentType } from 'react'
 import type {
   BaseSlots,

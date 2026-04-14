@@ -1,3 +1,5 @@
+'use client'
+
 import { useMemo, useCallback } from 'react'
 import type { ReactNode } from 'react'
 import { StackFormContext } from '@stackform/core'

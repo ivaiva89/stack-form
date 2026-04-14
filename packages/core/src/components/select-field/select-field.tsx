@@ -1,3 +1,5 @@
+'use client'
+
 import { forwardRef, useState, useEffect, useRef, useCallback } from 'react'
 import type { ReactNode, ComponentType, ForwardedRef, Ref } from 'react'
 import type {

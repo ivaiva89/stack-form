@@ -1,3 +1,5 @@
+'use client'
+
 declare const process: { env: { NODE_ENV?: string } } | undefined
 
 import { forwardRef, useRef, useCallback, useLayoutEffect } from 'react'

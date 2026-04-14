@@ -1,3 +1,5 @@
+'use client'
+
 import { useStackFormContext } from '../context'
 
 export function useFieldValue<T = unknown>(name: string): T {
