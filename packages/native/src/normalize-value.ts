@@ -1,6 +1,3 @@
 export function normalizeValue(value: unknown): unknown {
-  if (value === undefined || value === null) {
-    return ''
-  }
-  return value
+  return value ?? undefined
 }

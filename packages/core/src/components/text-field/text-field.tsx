@@ -144,7 +144,7 @@ export function TextField({
     <InputSlot
       id={id}
       name={name}
-      value={field.value}
+      value={field.value ?? ''}
       onChange={handleChange}
       onBlur={handleBlur}
       disabled={isDisabled}
@@ -161,7 +161,7 @@ export function TextField({
     <input
       id={id}
       name={name}
-      value={field.value}
+      value={field.value ?? ''}
       onChange={(e) => handleChange(e.target.value)}
       onBlur={handleBlur}
       disabled={isDisabled}

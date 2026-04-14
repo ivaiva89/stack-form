@@ -96,7 +96,7 @@ export function SwitchField({
   const ErrorSlot = resolvedSlots.Error
   const HintSlot = resolvedSlots.Hint
 
-  const isChecked = !!field.value
+  const isChecked = (field.value ?? false) as boolean
   const statusLabel = isChecked ? onLabel : offLabel
 
   const inputElement = loading ? (

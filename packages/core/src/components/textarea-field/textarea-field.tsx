@@ -203,7 +203,7 @@ export function TextareaField({
     <InputSlot
       id={id}
       name={name}
-      value={field.value}
+      value={field.value ?? ''}
       onChange={handleChange}
       onBlur={handleBlur}
       disabled={isDisabled}
@@ -221,7 +221,7 @@ export function TextareaField({
       ref={textareaRef}
       id={id}
       name={name}
-      value={field.value}
+      value={field.value ?? ''}
       onChange={(e) => handleChange(e.target.value)}
       onBlur={handleBlur}
       disabled={isDisabled}

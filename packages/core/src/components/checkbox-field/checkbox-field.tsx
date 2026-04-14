@@ -117,7 +117,7 @@ export function CheckboxField({
     <InputSlot
       id={id}
       name={name}
-      checked={!!field.value}
+      checked={(field.value ?? false) as boolean}
       onChange={handleChange}
       onBlur={handleBlur}
       disabled={isDisabled}
@@ -132,7 +132,7 @@ export function CheckboxField({
       type="checkbox"
       id={id}
       name={name}
-      checked={!!field.value}
+      checked={(field.value ?? false) as boolean}
       onChange={(e) => handleChange(e.target.checked)}
       onBlur={handleBlur}
       disabled={isDisabled}
