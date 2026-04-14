@@ -1,6 +1,7 @@
 declare const process: { env: { NODE_ENV?: string } } | undefined
 
-import type { ReactNode, ComponentType } from 'react'
+import { forwardRef } from 'react'
+import type { ReactNode, ComponentType, ForwardedRef, Ref } from 'react'
 import type {
   BaseFieldProps,
   BaseSlots,
@@ -46,25 +47,28 @@ export interface TextFieldProps extends BaseFieldProps<string> {
   validate?: ValidateFn<string>
 }
 
-export function TextField({
-  name,
-  label,
-  hint,
-  disabled: disabledProp,
-  loading = false,
-  required,
-  placeholder,
-  maxLength,
-  showCount = false,
-  type = 'text',
-  prefix,
-  suffix,
-  classNames,
-  slots,
-  slotProps,
-  onValueChange,
-  validate,
-}: TextFieldProps): ReactNode {
+export const TextField = forwardRef(function TextField(
+  {
+    name,
+    label,
+    hint,
+    disabled: disabledProp,
+    loading = false,
+    required,
+    placeholder,
+    maxLength,
+    showCount = false,
+    type = 'text',
+    prefix,
+    suffix,
+    classNames,
+    slots,
+    slotProps,
+    onValueChange,
+    validate,
+  }: TextFieldProps,
+  ref: ForwardedRef<HTMLInputElement>
+): ReactNode {
   const field = useField<string>(name, { label, validate })
   const {
     id,
@@ -146,6 +150,7 @@ export function TextField({
     />
   ) : (
     <input
+      ref={ref}
       id={id}
       name={name}
       value={field.value ?? ''}
@@ -223,4 +228,4 @@ export function TextField({
       {errorElement ?? hintElement}
     </>
   )
-}
+}) as (props: TextFieldProps & { ref?: Ref<HTMLInputElement> }) => ReactNode

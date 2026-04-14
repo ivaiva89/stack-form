@@ -1,4 +1,5 @@
-import type { ReactNode, ComponentType } from 'react'
+import { forwardRef } from 'react'
+import type { ReactNode, ComponentType, ForwardedRef, Ref } from 'react'
 import type {
   BaseFieldProps,
   BaseSlots,
@@ -39,25 +40,28 @@ export interface NumberFieldProps extends BaseFieldProps<number> {
   validate?: ValidateFn<number>
 }
 
-export function NumberField({
-  name,
-  label,
-  hint,
-  disabled: disabledProp,
-  loading = false,
-  required,
-  min,
-  max,
-  step = 1,
-  placeholder,
-  showStepper = false,
-  format: _format,
-  classNames,
-  slots,
-  slotProps,
-  onValueChange,
-  validate,
-}: NumberFieldProps): ReactNode {
+export const NumberField = forwardRef(function NumberField(
+  {
+    name,
+    label,
+    hint,
+    disabled: disabledProp,
+    loading = false,
+    required,
+    min,
+    max,
+    step = 1,
+    placeholder,
+    showStepper = false,
+    format: _format,
+    classNames,
+    slots,
+    slotProps,
+    onValueChange,
+    validate,
+  }: NumberFieldProps,
+  ref: ForwardedRef<HTMLInputElement>
+): ReactNode {
   const field = useField<number>(name, { label, validate })
   const {
     id,
@@ -145,6 +149,7 @@ export function NumberField({
     />
   ) : (
     <input
+      ref={ref}
       type="number"
       id={id}
       name={name}
@@ -223,4 +228,4 @@ export function NumberField({
       {errorElement ?? hintElement}
     </>
   )
-}
+}) as (props: NumberFieldProps & { ref?: Ref<HTMLInputElement> }) => ReactNode

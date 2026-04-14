@@ -1,4 +1,5 @@
-import type { ReactNode, ComponentType } from 'react'
+import { forwardRef } from 'react'
+import type { ReactNode, ComponentType, ForwardedRef, Ref } from 'react'
 import type {
   BaseFieldProps,
   BaseSlots,
@@ -39,21 +40,24 @@ export interface RadioGroupFieldProps<T = string> extends BaseFieldProps<T> {
   validate?: ValidateFn<T>
 }
 
-export function RadioGroupField<T = string>({
-  name,
-  label,
-  hint,
-  disabled: disabledProp,
-  loading = false,
-  required,
-  options,
-  orientation = 'vertical',
-  classNames,
-  slots,
-  slotProps,
-  onValueChange,
-  validate,
-}: RadioGroupFieldProps<T>): ReactNode {
+export const RadioGroupField = forwardRef(function RadioGroupField<T = string>(
+  {
+    name,
+    label,
+    hint,
+    disabled: disabledProp,
+    loading = false,
+    required,
+    options,
+    orientation = 'vertical',
+    classNames,
+    slots,
+    slotProps,
+    onValueChange,
+    validate,
+  }: RadioGroupFieldProps<T>,
+  ref: ForwardedRef<HTMLFieldSetElement>
+): ReactNode {
   const field = useField<T>(name, { label, validate })
   const {
     id,
@@ -149,6 +153,7 @@ export function RadioGroupField<T = string>({
 
   const groupContent = (
     <fieldset
+      ref={ref}
       role="radiogroup"
       aria-labelledby={label != null ? `${id}-legend` : undefined}
       aria-describedby={describedBy}
@@ -167,4 +172,6 @@ export function RadioGroupField<T = string>({
   )
 
   return renderWrapper(groupContent)
-}
+}) as <T = string>(
+  props: RadioGroupFieldProps<T> & { ref?: Ref<HTMLFieldSetElement> }
+) => ReactNode

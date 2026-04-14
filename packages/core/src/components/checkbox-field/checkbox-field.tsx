@@ -1,5 +1,5 @@
-import type { ReactNode, ComponentType } from 'react'
-import { useRef, useEffect } from 'react'
+import { forwardRef, useRef, useEffect, useCallback } from 'react'
+import type { ReactNode, ComponentType, ForwardedRef, Ref } from 'react'
 import type {
   BaseFieldProps,
   BaseSlots,
@@ -28,21 +28,24 @@ export interface CheckboxFieldProps extends BaseFieldProps<boolean> {
   validate?: ValidateFn<boolean>
 }
 
-export function CheckboxField({
-  name,
-  label,
-  hint,
-  disabled: disabledProp,
-  loading = false,
-  required,
-  indeterminate = false,
-  labelPosition = 'right',
-  classNames,
-  slots,
-  slotProps,
-  onValueChange,
-  validate,
-}: CheckboxFieldProps): ReactNode {
+export const CheckboxField = forwardRef(function CheckboxField(
+  {
+    name,
+    label,
+    hint,
+    disabled: disabledProp,
+    loading = false,
+    required,
+    indeterminate = false,
+    labelPosition = 'right',
+    classNames,
+    slots,
+    slotProps,
+    onValueChange,
+    validate,
+  }: CheckboxFieldProps,
+  ref: ForwardedRef<HTMLInputElement>
+): ReactNode {
   const field = useField<boolean>(name, { label, validate })
   const {
     id,
@@ -71,7 +74,19 @@ export function CheckboxField({
     field
   )
 
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
+
+  const setRef = useCallback(
+    (el: HTMLInputElement | null) => {
+      inputRef.current = el
+      if (typeof ref === 'function') {
+        ref(el)
+      } else if (ref != null) {
+        ref.current = el
+      }
+    },
+    [ref]
+  )
 
   useEffect(() => {
     if (inputRef.current) {
@@ -118,7 +133,7 @@ export function CheckboxField({
     />
   ) : (
     <input
-      ref={inputRef}
+      ref={setRef}
       type="checkbox"
       id={id}
       name={name}
@@ -144,4 +159,4 @@ export function CheckboxField({
       {errorElement ?? hintElement}
     </>
   )
-}
+}) as (props: CheckboxFieldProps & { ref?: Ref<HTMLInputElement> }) => ReactNode

@@ -1,4 +1,5 @@
-import type { ReactNode, ComponentType } from 'react'
+import { forwardRef } from 'react'
+import type { ReactNode, ComponentType, ForwardedRef, Ref } from 'react'
 import type {
   BaseFieldProps,
   BaseSlots,
@@ -29,23 +30,26 @@ export interface SwitchFieldProps extends BaseFieldProps<boolean> {
   validate?: ValidateFn<boolean>
 }
 
-export function SwitchField({
-  name,
-  label,
-  hint,
-  disabled: disabledProp,
-  loading = false,
-  required,
-  onLabel,
-  offLabel,
-  size: _size,
-  labelPosition = 'right',
-  classNames,
-  slots,
-  slotProps,
-  onValueChange,
-  validate,
-}: SwitchFieldProps): ReactNode {
+export const SwitchField = forwardRef(function SwitchField(
+  {
+    name,
+    label,
+    hint,
+    disabled: disabledProp,
+    loading = false,
+    required,
+    onLabel,
+    offLabel,
+    size: _size,
+    labelPosition = 'right',
+    classNames,
+    slots,
+    slotProps,
+    onValueChange,
+    validate,
+  }: SwitchFieldProps,
+  ref: ForwardedRef<HTMLButtonElement>
+): ReactNode {
   const field = useField<boolean>(name, { label, validate })
   const {
     id,
@@ -110,6 +114,7 @@ export function SwitchField({
     />
   ) : (
     <button
+      ref={ref}
       type="button"
       id={id}
       role="switch"
@@ -136,4 +141,4 @@ export function SwitchField({
       {errorElement ?? hintElement}
     </>
   )
-}
+}) as (props: SwitchFieldProps & { ref?: Ref<HTMLButtonElement> }) => ReactNode

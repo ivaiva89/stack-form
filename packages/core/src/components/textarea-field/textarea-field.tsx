@@ -1,7 +1,7 @@
 declare const process: { env: { NODE_ENV?: string } } | undefined
 
-import type { ReactNode, ComponentType } from 'react'
-import { useRef, useCallback, useLayoutEffect } from 'react'
+import { forwardRef, useRef, useCallback, useLayoutEffect } from 'react'
+import type { ReactNode, ComponentType, ForwardedRef, Ref } from 'react'
 import type {
   BaseFieldProps,
   BaseSlots,
@@ -40,26 +40,29 @@ export interface TextareaFieldProps extends BaseFieldProps<string> {
   validate?: ValidateFn<string>
 }
 
-export function TextareaField({
-  name,
-  label,
-  hint,
-  disabled: disabledProp,
-  loading = false,
-  required,
-  placeholder,
-  maxLength,
-  showCount = false,
-  rows = 3,
-  maxRows,
-  autoResize = false,
-  resize = 'vertical',
-  classNames,
-  slots,
-  slotProps,
-  onValueChange,
-  validate,
-}: TextareaFieldProps): ReactNode {
+export const TextareaField = forwardRef(function TextareaField(
+  {
+    name,
+    label,
+    hint,
+    disabled: disabledProp,
+    loading = false,
+    required,
+    placeholder,
+    maxLength,
+    showCount = false,
+    rows = 3,
+    maxRows,
+    autoResize = false,
+    resize = 'vertical',
+    classNames,
+    slots,
+    slotProps,
+    onValueChange,
+    validate,
+  }: TextareaFieldProps,
+  ref: ForwardedRef<HTMLTextAreaElement>
+): ReactNode {
   const field = useField<string>(name, { label, validate })
   const {
     id,
@@ -99,8 +102,20 @@ export function TextareaField({
     )
   }
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
   const mirrorRef = useRef<HTMLDivElement>(null)
+
+  const setRef = useCallback(
+    (el: HTMLTextAreaElement | null) => {
+      textareaRef.current = el
+      if (typeof ref === 'function') {
+        ref(el)
+      } else if (ref != null) {
+        ref.current = el
+      }
+    },
+    [ref]
+  )
 
   const updateHeight = useCallback((): void => {
     const textarea = textareaRef.current
@@ -207,7 +222,7 @@ export function TextareaField({
     />
   ) : (
     <textarea
-      ref={textareaRef}
+      ref={setRef}
       id={id}
       name={name}
       value={field.value ?? ''}
@@ -253,4 +268,6 @@ export function TextareaField({
       {errorElement ?? hintElement}
     </>
   )
-}
+}) as (
+  props: TextareaFieldProps & { ref?: Ref<HTMLTextAreaElement> }
+) => ReactNode

@@ -1,5 +1,5 @@
-import type { ReactNode, ComponentType } from 'react'
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { forwardRef, useState, useEffect, useRef, useCallback } from 'react'
+import type { ReactNode, ComponentType, ForwardedRef, Ref } from 'react'
 import type {
   BaseFieldProps,
   BaseSlots,
@@ -54,24 +54,27 @@ export interface SelectFieldProps<T = string> extends BaseFieldProps<T> {
   validate?: ValidateFn<T>
 }
 
-export function SelectField<T = string>({
-  name,
-  label,
-  hint,
-  disabled: disabledProp,
-  loading = false,
-  required,
-  placeholder,
-  options: staticOptions,
-  loadOptions,
-  searchable = false,
-  debounceMs = 300,
-  classNames,
-  slots,
-  slotProps,
-  onValueChange,
-  validate,
-}: SelectFieldProps<T>): ReactNode {
+export const SelectField = forwardRef(function SelectField<T = string>(
+  {
+    name,
+    label,
+    hint,
+    disabled: disabledProp,
+    loading = false,
+    required,
+    placeholder,
+    options: staticOptions,
+    loadOptions,
+    searchable = false,
+    debounceMs = 300,
+    classNames,
+    slots,
+    slotProps,
+    onValueChange,
+    validate,
+  }: SelectFieldProps<T>,
+  ref: ForwardedRef<HTMLSelectElement>
+): ReactNode {
   const field = useField<T>(name, { label, validate })
   const {
     id,
@@ -217,6 +220,7 @@ export function SelectField<T = string>({
     />
   ) : (
     <select
+      ref={ref}
       id={id}
       name={name}
       value={valueAsString}
@@ -352,4 +356,6 @@ export function SelectField<T = string>({
       {errorElement ?? hintElement}
     </>
   )
-}
+}) as <T = string>(
+  props: SelectFieldProps<T> & { ref?: Ref<HTMLSelectElement> }
+) => ReactNode
