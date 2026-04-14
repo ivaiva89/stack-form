@@ -12,14 +12,7 @@ import type {
 } from '../../types'
 import type { ValidateFn } from '../../hooks'
 import { useField } from '../../hooks'
-import { useStackFormContext, useSlotDefaults } from '../../context'
-import {
-  resolveSlots,
-  resolveSlotProps,
-  resolveClassNames,
-  toFieldId,
-  toDescribedBy,
-} from '../../utils'
+import { useFieldRenderers } from '../../hooks/use-field-renderers'
 
 export interface TextFieldSlots extends BaseSlots {
   Input?: ComponentType<TextInputSlotProps>
@@ -72,17 +65,33 @@ export function TextField({
   onValueChange,
   validate,
 }: TextFieldProps): ReactNode {
-  const ctx = useStackFormContext()
-  const slotDefaults = useSlotDefaults()
   const field = useField<string>(name, { label, validate })
-  const formId = ctx.formId
-  const isDisabled = disabledProp ?? ctx.formState.disabled ?? field.disabled
-
-  const id = toFieldId(name, formId)
-  const displayError = field.error
-  const hasError = !!displayError
-  const hasHint = !!hint
-  const describedBy = toDescribedBy(id, { hasError, hasHint }) || undefined
+  const {
+    id,
+    isDisabled,
+    hasError,
+    describedBy,
+    resolvedSlots,
+    resolvedSlotProps,
+    resolvedClassNames,
+    labelElement,
+    errorElement,
+    hintElement,
+    validatingIndicator,
+    renderWrapper,
+  } = useFieldRenderers<TextFieldSlots, TextFieldClassNames>(
+    {
+      name,
+      label,
+      hint,
+      disabled: disabledProp,
+      required,
+      slots,
+      slotProps,
+      classNames,
+    },
+    field
+  )
 
   if (
     typeof process !== 'undefined' &&
@@ -95,23 +104,10 @@ export function TextField({
     )
   }
 
-  type TextFieldSlotsRecord = Record<
-    string,
-    React.ComponentType<never> | undefined
-  >
-  type TextFieldClassNamesRecord = Record<string, string | undefined>
-
-  const resolvedSlots = resolveSlots(
-    {} as TextFieldSlotsRecord,
-    slotDefaults.slots as Partial<TextFieldSlotsRecord> | undefined,
-    slots as unknown as Partial<TextFieldSlotsRecord>
-  ) as unknown as TextFieldSlots
-  const resolvedSlotProps = resolveSlotProps(slotDefaults.slotProps, slotProps)
-  const resolvedClassNames = resolveClassNames(
-    undefined,
-    slotDefaults.classNames as Partial<TextFieldClassNamesRecord> | undefined,
-    classNames as unknown as Partial<TextFieldClassNamesRecord>
-  ) as unknown as TextFieldClassNames
+  const InputSlot = resolvedSlots.Input
+  const PrefixSlot = resolvedSlots.Prefix
+  const SuffixSlot = resolvedSlots.Suffix
+  const CounterSlot = resolvedSlots.Counter
 
   const handleChange = (value: string): void => {
     field.onChange(value)
@@ -122,15 +118,6 @@ export function TextField({
     field.onBlur()
     field.runValidation(field.value)
   }
-
-  const WrapperSlot = resolvedSlots.Wrapper
-  const LabelSlot = resolvedSlots.Label
-  const ErrorSlot = resolvedSlots.Error
-  const HintSlot = resolvedSlots.Hint
-  const InputSlot = resolvedSlots.Input
-  const PrefixSlot = resolvedSlots.Prefix
-  const SuffixSlot = resolvedSlots.Suffix
-  const CounterSlot = resolvedSlots.Counter
 
   const current = typeof field.value === 'string' ? field.value.length : 0
 
@@ -225,74 +212,7 @@ export function TextField({
       )
     ) : null
 
-  const validatingIndicator = field.isValidating ? (
-    <span aria-live="polite" role="status">
-      Validating…
-    </span>
-  ) : null
-
-  const errorElement = hasError ? (
-    ErrorSlot ? (
-      <ErrorSlot
-        id={`${id}-error`}
-        message={displayError!}
-        className={resolvedClassNames.error}
-        {...(resolvedSlotProps.error as
-          | Partial<import('../../types').ErrorSlotProps>
-          | undefined)}
-      />
-    ) : (
-      <span
-        id={`${id}-error`}
-        className={resolvedClassNames.error}
-        role="alert"
-      >
-        {displayError}
-      </span>
-    )
-  ) : null
-
-  const hintElement =
-    hasHint && !hasError ? (
-      HintSlot ? (
-        <HintSlot
-          id={`${id}-hint`}
-          className={resolvedClassNames.hint}
-          {...(resolvedSlotProps.hint as
-            | Partial<import('../../types').HintSlotProps>
-            | undefined)}
-        >
-          {hint}
-        </HintSlot>
-      ) : (
-        <span id={`${id}-hint`} className={resolvedClassNames.hint}>
-          {hint}
-        </span>
-      )
-    ) : null
-
-  const labelElement =
-    label != null ? (
-      LabelSlot ? (
-        <LabelSlot
-          htmlFor={id}
-          required={required}
-          className={resolvedClassNames.label}
-          {...(resolvedSlotProps.label as
-            | Partial<import('../../types').LabelSlotProps>
-            | undefined)}
-        >
-          {label}
-        </LabelSlot>
-      ) : (
-        <label htmlFor={id} className={resolvedClassNames.label}>
-          {label}
-          {required ? <span aria-hidden="true"> *</span> : null}
-        </label>
-      )
-    ) : null
-
-  const content = (
+  return renderWrapper(
     <>
       {labelElement}
       {prefixElement}
@@ -302,28 +222,5 @@ export function TextField({
       {validatingIndicator}
       {errorElement ?? hintElement}
     </>
-  )
-
-  if (WrapperSlot) {
-    return (
-      <WrapperSlot
-        className={resolvedClassNames.wrapper}
-        {...(resolvedSlotProps.wrapper as
-          | Partial<import('../../types').WrapperSlotProps>
-          | undefined)}
-      >
-        {content}
-      </WrapperSlot>
-    )
-  }
-
-  return (
-    <div
-      className={resolvedClassNames.wrapper}
-      data-error={hasError || undefined}
-      data-disabled={isDisabled || undefined}
-    >
-      {content}
-    </div>
   )
 }

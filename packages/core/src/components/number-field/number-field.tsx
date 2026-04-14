@@ -8,14 +8,7 @@ import type {
 } from '../../types'
 import type { ValidateFn } from '../../hooks'
 import { useField } from '../../hooks'
-import { useStackFormContext, useSlotDefaults } from '../../context'
-import {
-  resolveSlots,
-  resolveSlotProps,
-  resolveClassNames,
-  toFieldId,
-  toDescribedBy,
-} from '../../utils'
+import { useFieldRenderers } from '../../hooks/use-field-renderers'
 
 export interface NumberFieldSlots extends BaseSlots {
   Input?: ComponentType<NumberInputSlotProps>
@@ -65,17 +58,33 @@ export function NumberField({
   onValueChange,
   validate,
 }: NumberFieldProps): ReactNode {
-  const ctx = useStackFormContext()
-  const slotDefaults = useSlotDefaults()
   const field = useField<number>(name, { label, validate })
-  const formId = ctx.formId
-  const isDisabled = disabledProp ?? ctx.formState.disabled ?? field.disabled
-
-  const id = toFieldId(name, formId)
-  const displayError = field.error
-  const hasError = !!displayError
-  const hasHint = !!hint
-  const describedBy = toDescribedBy(id, { hasError, hasHint }) || undefined
+  const {
+    id,
+    isDisabled,
+    hasError,
+    describedBy,
+    resolvedSlots,
+    resolvedSlotProps,
+    resolvedClassNames,
+    labelElement,
+    errorElement,
+    hintElement,
+    validatingIndicator,
+    renderWrapper,
+  } = useFieldRenderers<NumberFieldSlots, NumberFieldClassNames>(
+    {
+      name,
+      label,
+      hint,
+      disabled: disabledProp,
+      required,
+      slots,
+      slotProps,
+      classNames,
+    },
+    field
+  )
 
   const numericValue = typeof field.value === 'number' ? field.value : 0
 
@@ -104,28 +113,9 @@ export function NumberField({
   const isIncrementDisabled = isDisabled || (max != null && numericValue >= max)
   const isDecrementDisabled = isDisabled || (min != null && numericValue <= min)
 
-  type SlotRecord = Record<string, React.ComponentType<never> | undefined>
-  type ClassRecord = Record<string, string | undefined>
-
-  const resolvedSlots = resolveSlots(
-    {} as SlotRecord,
-    slotDefaults.slots as Partial<SlotRecord> | undefined,
-    slots as unknown as Partial<SlotRecord>
-  ) as unknown as NumberFieldSlots
-  const resolvedSlotProps = resolveSlotProps(slotDefaults.slotProps, slotProps)
-  const resolvedClassNames = resolveClassNames(
-    undefined,
-    slotDefaults.classNames as Partial<ClassRecord> | undefined,
-    classNames as unknown as Partial<ClassRecord>
-  ) as unknown as NumberFieldClassNames
-
   const InputSlot = resolvedSlots.Input
   const IncrementSlot = resolvedSlots.StepperIncrement
   const DecrementSlot = resolvedSlots.StepperDecrement
-  const WrapperSlot = resolvedSlots.Wrapper
-  const LabelSlot = resolvedSlots.Label
-  const ErrorSlot = resolvedSlots.Error
-  const HintSlot = resolvedSlots.Hint
 
   const inputElement = loading ? (
     <div
@@ -224,74 +214,7 @@ export function NumberField({
       </>
     ) : null
 
-  const labelElement =
-    label != null ? (
-      LabelSlot ? (
-        <LabelSlot
-          htmlFor={id}
-          required={required}
-          className={resolvedClassNames.label}
-          {...(resolvedSlotProps.label as
-            | Partial<import('../../types').LabelSlotProps>
-            | undefined)}
-        >
-          {label}
-        </LabelSlot>
-      ) : (
-        <label htmlFor={id} className={resolvedClassNames.label}>
-          {label}
-          {required ? <span aria-hidden="true"> *</span> : null}
-        </label>
-      )
-    ) : null
-
-  const validatingIndicator = field.isValidating ? (
-    <span aria-live="polite" role="status">
-      Validating…
-    </span>
-  ) : null
-
-  const errorElement = hasError ? (
-    ErrorSlot ? (
-      <ErrorSlot
-        id={`${id}-error`}
-        message={displayError!}
-        className={resolvedClassNames.error}
-        {...(resolvedSlotProps.error as
-          | Partial<import('../../types').ErrorSlotProps>
-          | undefined)}
-      />
-    ) : (
-      <span
-        id={`${id}-error`}
-        className={resolvedClassNames.error}
-        role="alert"
-      >
-        {displayError}
-      </span>
-    )
-  ) : null
-
-  const hintElement =
-    hasHint && !hasError ? (
-      HintSlot ? (
-        <HintSlot
-          id={`${id}-hint`}
-          className={resolvedClassNames.hint}
-          {...(resolvedSlotProps.hint as
-            | Partial<import('../../types').HintSlotProps>
-            | undefined)}
-        >
-          {hint}
-        </HintSlot>
-      ) : (
-        <span id={`${id}-hint`} className={resolvedClassNames.hint}>
-          {hint}
-        </span>
-      )
-    ) : null
-
-  const content = (
+  return renderWrapper(
     <>
       {labelElement}
       {inputElement}
@@ -299,28 +222,5 @@ export function NumberField({
       {validatingIndicator}
       {errorElement ?? hintElement}
     </>
-  )
-
-  if (WrapperSlot) {
-    return (
-      <WrapperSlot
-        className={resolvedClassNames.wrapper}
-        {...(resolvedSlotProps.wrapper as
-          | Partial<import('../../types').WrapperSlotProps>
-          | undefined)}
-      >
-        {content}
-      </WrapperSlot>
-    )
-  }
-
-  return (
-    <div
-      className={resolvedClassNames.wrapper}
-      data-error={hasError || undefined}
-      data-disabled={isDisabled || undefined}
-    >
-      {content}
-    </div>
   )
 }
