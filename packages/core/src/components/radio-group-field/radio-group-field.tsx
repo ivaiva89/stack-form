@@ -255,5 +255,13 @@ export function RadioGroupField<T = string>({
     )
   }
 
-  return <div className={resolvedClassNames.wrapper}>{groupContent}</div>
+  return (
+    <div
+      className={resolvedClassNames.wrapper}
+      data-error={hasError || undefined}
+      data-disabled={isDisabled || undefined}
+    >
+      {groupContent}
+    </div>
+  )
 }

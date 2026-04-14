@@ -443,5 +443,13 @@ export function SelectField<T = string>({
     )
   }
 
-  return <div className={resolvedClassNames.wrapper}>{content}</div>
+  return (
+    <div
+      className={resolvedClassNames.wrapper}
+      data-error={hasError || undefined}
+      data-disabled={isDisabled || undefined}
+    >
+      {content}
+    </div>
+  )
 }

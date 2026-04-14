@@ -235,5 +235,13 @@ export function CheckboxField({
     )
   }
 
-  return <div className={resolvedClassNames.wrapper}>{content}</div>
+  return (
+    <div
+      className={resolvedClassNames.wrapper}
+      data-error={hasError || undefined}
+      data-disabled={isDisabled || undefined}
+    >
+      {content}
+    </div>
+  )
 }
