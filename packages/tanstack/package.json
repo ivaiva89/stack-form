@@ -1,7 +1,24 @@
 {
   "name": "@stackform/tanstack",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "TanStack Form adapter for StackForm",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ivaiva89/stack-form.git",
+    "directory": "packages/tanstack"
+  },
+  "keywords": [
+    "react",
+    "form",
+    "stackform",
+    "tanstack",
+    "tanstack-form"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "import": "./dist/index.mjs",

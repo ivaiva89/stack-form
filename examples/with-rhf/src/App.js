@@ -74,7 +74,9 @@ function RegistrationPage() {
             form.clearErrors('agreeTerms');
         }
         if (!values.contactMethod) {
-            form.setError('contactMethod', { message: 'Please choose a contact method' });
+            form.setError('contactMethod', {
+                message: 'Please choose a contact method',
+            });
             hasErrors = true;
         }
         else {
@@ -106,7 +108,7 @@ function LoadingPage() {
             agreeTerms: false,
         },
     });
-    return (_jsx(StackFormProvider, { children: _jsx(RHFFormProvider, { form: form, children: _jsxs("div", { className: "space-y-5", children: [_jsxs("p", { className: "text-sm text-slate-500", children: ["All fields below are in ", _jsx("code", { className: "rounded bg-slate-100 px-1 py-0.5 text-xs", children: "loading=true" }), " state \u2014 the input is replaced with a shimmer skeleton."] }), _jsx(TextField, { name: "fullName", label: "Full name", loading: true }), _jsx(TextField, { name: "email", label: "Email address", loading: true }), _jsx(NumberField, { name: "age", label: "Age", loading: true }), _jsx(TextareaField, { name: "bio", label: "Bio", loading: true }), _jsx(SelectField, { name: "country", label: "Country", options: COUNTRIES, loading: true }), _jsx(RadioGroupField, { name: "contactMethod", label: "Preferred contact method", options: CONTACT_OPTIONS, loading: true }), _jsx(SwitchField, { name: "newsletter", label: "Subscribe to newsletter", loading: true }), _jsx(CheckboxField, { name: "agreeTerms", label: "I agree to the terms", loading: true })] }) }) }));
+    return (_jsx(StackFormProvider, { children: _jsx(RHFFormProvider, { form: form, children: _jsxs("div", { className: "space-y-5", children: [_jsxs("p", { className: "text-sm text-slate-500", children: ["All fields below are in", ' ', _jsx("code", { className: "rounded bg-slate-100 px-1 py-0.5 text-xs", children: "loading=true" }), ' ', "state \u2014 the input is replaced with a shimmer skeleton."] }), _jsx(TextField, { name: "fullName", label: "Full name", loading: true }), _jsx(TextField, { name: "email", label: "Email address", loading: true }), _jsx(NumberField, { name: "age", label: "Age", loading: true }), _jsx(TextareaField, { name: "bio", label: "Bio", loading: true }), _jsx(SelectField, { name: "country", label: "Country", options: COUNTRIES, loading: true }), _jsx(RadioGroupField, { name: "contactMethod", label: "Preferred contact method", options: CONTACT_OPTIONS, loading: true }), _jsx(SwitchField, { name: "newsletter", label: "Subscribe to newsletter", loading: true }), _jsx(CheckboxField, { name: "agreeTerms", label: "I agree to the terms", loading: true })] }) }) }));
 }
 // ─── Page 3 — Slot override demo ─────────────────────────────────────────────
 function SlotOverridePage() {
@@ -135,7 +137,7 @@ function SlotOverridePage() {
         Label: CustomLabel,
         Error: CustomError,
     };
-    return (_jsx(StackFormProvider, { children: _jsx(RHFFormProvider, { form: form, children: _jsxs("div", { className: "space-y-6", children: [_jsxs("div", { className: "rounded-lg border border-indigo-100 bg-indigo-50 p-4 text-sm text-indigo-700", children: [_jsx("strong", { children: "What this shows:" }), " the ", _jsx("code", { className: "rounded bg-indigo-100 px-1 text-xs", children: "Label" }), " and", ' ', _jsx("code", { className: "rounded bg-indigo-100 px-1 text-xs", children: "Error" }), " slots are replaced with custom components via the ", _jsx("code", { className: "rounded bg-indigo-100 px-1 text-xs", children: "slots" }), " prop on each field."] }), _jsxs("form", { onSubmit: handleSubmit, noValidate: true, className: "space-y-5", children: [_jsx(TextField, { name: "username", label: "Username", placeholder: "janedoe", required: true, slots: customSlots }), _jsx(SelectField, { name: "role", label: "Role", placeholder: "Choose a role", options: [
+    return (_jsx(StackFormProvider, { children: _jsx(RHFFormProvider, { form: form, children: _jsxs("div", { className: "space-y-6", children: [_jsxs("div", { className: "rounded-lg border border-indigo-100 bg-indigo-50 p-4 text-sm text-indigo-700", children: [_jsx("strong", { children: "What this shows:" }), " the", ' ', _jsx("code", { className: "rounded bg-indigo-100 px-1 text-xs", children: "Label" }), ' ', "and", ' ', _jsx("code", { className: "rounded bg-indigo-100 px-1 text-xs", children: "Error" }), ' ', "slots are replaced with custom components via the", ' ', _jsx("code", { className: "rounded bg-indigo-100 px-1 text-xs", children: "slots" }), ' ', "prop on each field."] }), _jsxs("form", { onSubmit: handleSubmit, noValidate: true, className: "space-y-5", children: [_jsx(TextField, { name: "username", label: "Username", placeholder: "janedoe", required: true, slots: customSlots }), _jsx(SelectField, { name: "role", label: "Role", placeholder: "Choose a role", options: [
                                     { value: 'admin', label: 'Admin' },
                                     { value: 'editor', label: 'Editor' },
                                     { value: 'viewer', label: 'Viewer' },

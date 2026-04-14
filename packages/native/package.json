@@ -1,7 +1,23 @@
 {
   "name": "@stackform/native",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Native React state adapter for StackForm",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ivaiva89/stack-form.git",
+    "directory": "packages/native"
+  },
+  "keywords": [
+    "react",
+    "form",
+    "stackform",
+    "native"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "import": "./dist/index.mjs",

@@ -1,7 +1,22 @@
 {
   "name": "@stackform/cli",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "CLI for StackForm — scaffold, add components, and diff your config",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ivaiva89/stack-form.git",
+    "directory": "cli"
+  },
+  "keywords": [
+    "react",
+    "form",
+    "stackform",
+    "cli"
+  ],
+  "files": [
+    "dist"
+  ],
   "bin": {
     "stackform": "./dist/index.mjs"
   },

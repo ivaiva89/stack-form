@@ -1,7 +1,24 @@
 {
   "name": "@stackform/valibot",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Valibot validation integration for StackForm",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ivaiva89/stack-form.git",
+    "directory": "packages/valibot"
+  },
+  "keywords": [
+    "react",
+    "form",
+    "stackform",
+    "valibot",
+    "validation"
+  ],
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
