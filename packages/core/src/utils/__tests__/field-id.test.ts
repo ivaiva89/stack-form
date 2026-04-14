@@ -29,9 +29,9 @@ describe('toFieldId', () => {
 })
 
 describe('toDescribedBy', () => {
-  it('returns both error and hint IDs when both present', () => {
+  it('suppresses hint ID when error is active (WCAG)', () => {
     expect(toDescribedBy('email', { hasError: true, hasHint: true })).toBe(
-      'email-error email-hint'
+      'email-error'
     )
   })
 
