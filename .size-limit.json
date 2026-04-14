@@ -1,0 +1,32 @@
+[
+  {
+    "name": "@stackform/core (ESM)",
+    "path": "packages/core/dist/index.mjs",
+    "import": "*"
+  },
+  {
+    "name": "@stackform/core (CJS)",
+    "path": "packages/core/dist/index.js",
+    "import": "*"
+  },
+  {
+    "name": "@stackform/ui (ESM)",
+    "path": "packages/ui/dist/index.mjs",
+    "import": "*"
+  },
+  {
+    "name": "@stackform/ui (CJS)",
+    "path": "packages/ui/dist/index.js",
+    "import": "*"
+  },
+  {
+    "name": "@stackform/rhf (ESM)",
+    "path": "packages/rhf/dist/index.mjs",
+    "import": "*"
+  },
+  {
+    "name": "@stackform/rhf (CJS)",
+    "path": "packages/rhf/dist/index.js",
+    "import": "*"
+  }
+]
