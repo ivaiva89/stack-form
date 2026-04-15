@@ -40,10 +40,7 @@ export async function runAdd(
 
   if (selected.length === 0) {
     const available = listAvailableComponents(manifest)
-    const result = await clack.multiselect<
-      { value: string; label: string }[],
-      string
-    >({
+    const result = await clack.multiselect<string>({
       message: 'Select components to add:',
       options: available.map((name) => ({ value: name, label: name })),
     })

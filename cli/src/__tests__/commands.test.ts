@@ -83,6 +83,7 @@ beforeEach(async () => {
   vi.mocked(clack.spinner).mockReturnValue({
     start: vi.fn(),
     stop: vi.fn(),
+    message: vi.fn(),
   } as ReturnType<typeof clack.spinner>)
   vi.mocked(clack.isCancel).mockReturnValue(false)
 })

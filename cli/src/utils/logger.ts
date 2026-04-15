@@ -24,7 +24,10 @@ export async function select<T>(
   message: string,
   options: Array<{ value: T; label: string; hint?: string }>
 ): Promise<T> {
-  const result = await clack.select({ message, options })
+  const result = await clack.select({
+    message,
+    options: options as unknown as clack.Option<T>[],
+  })
   if (clack.isCancel(result)) {
     clack.cancel('Operation cancelled.')
     process.exit(0)

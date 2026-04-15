@@ -29,7 +29,7 @@ export async function runConfigSet(
 ): Promise<void> {
   assertAllowedKey(key)
   const config = await readConfig(cwd)
-  ;(config as Record<string, unknown>)[key] = value
+  ;(config as unknown as Record<string, unknown>)[key] = value
   await writeConfig(config, cwd)
   log.success(`Set ${key} = ${chalk.cyan(value)}`)
 }
