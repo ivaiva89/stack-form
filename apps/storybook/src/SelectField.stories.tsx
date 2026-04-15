@@ -42,12 +42,13 @@ export const Default: Story = {
 
 function WithErrorWrapper() {
   const form = useForm({ defaultValues: { fruit: '' } })
+  const { setError } = form
   useEffect(() => {
-    form.setError('fruit', {
+    setError('fruit', {
       type: 'manual',
       message: 'This field is required',
     })
-  }, [form.setError])
+  }, [setError])
   return (
     <RHFFormProvider form={form}>
       <SelectField

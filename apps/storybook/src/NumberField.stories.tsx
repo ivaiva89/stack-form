@@ -38,12 +38,13 @@ export const Default: Story = {
 
 function WithErrorWrapper() {
   const form = useForm({ defaultValues: { quantity: 0 } })
+  const { setError } = form
   useEffect(() => {
-    form.setError('quantity', {
+    setError('quantity', {
       type: 'manual',
       message: 'This field is required',
     })
-  }, [form.setError])
+  }, [setError])
   return (
     <RHFFormProvider form={form}>
       <NumberField name="quantity" label="Quantity" />

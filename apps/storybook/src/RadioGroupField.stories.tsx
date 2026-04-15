@@ -41,12 +41,13 @@ export const Default: Story = {
 
 function WithErrorWrapper() {
   const form = useForm({ defaultValues: { choice: '' } })
+  const { setError } = form
   useEffect(() => {
-    form.setError('choice', {
+    setError('choice', {
       type: 'manual',
       message: 'This field is required',
     })
-  }, [form.setError])
+  }, [setError])
   return (
     <RHFFormProvider form={form}>
       <RadioGroupField

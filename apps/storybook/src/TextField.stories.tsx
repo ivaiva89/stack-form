@@ -40,12 +40,13 @@ export const Default: Story = {
 
 function WithErrorWrapper() {
   const form = useForm({ defaultValues: { username: '' } })
+  const { setError } = form
   useEffect(() => {
-    form.setError('username', {
+    setError('username', {
       type: 'manual',
       message: 'This field is required',
     })
-  }, [form.setError])
+  }, [setError])
   return (
     <RHFFormProvider form={form}>
       <TextField name="username" label="Username" />

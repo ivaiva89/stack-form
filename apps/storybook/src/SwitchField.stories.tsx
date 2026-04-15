@@ -37,12 +37,13 @@ export const Default: Story = {
 
 function WithErrorWrapper() {
   const form = useForm({ defaultValues: { notifications: false } })
+  const { setError } = form
   useEffect(() => {
-    form.setError('notifications', {
+    setError('notifications', {
       type: 'manual',
       message: 'This field is required',
     })
-  }, [form.setError])
+  }, [setError])
   return (
     <RHFFormProvider form={form}>
       <SwitchField name="notifications" label="Enable notifications" />

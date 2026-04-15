@@ -3,6 +3,13 @@ node_modules
 
 # Build output
 dist
+storybook-static
+
+# Next.js
+.next
+out
+.source
+next-env.d.ts
 
 # IDE
 .idea

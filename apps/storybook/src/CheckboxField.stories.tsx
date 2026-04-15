@@ -35,12 +35,13 @@ export const Default: Story = {
 
 function WithErrorWrapper() {
   const form = useForm({ defaultValues: { agreed: false } })
+  const { setError } = form
   useEffect(() => {
-    form.setError('agreed', {
+    setError('agreed', {
       type: 'manual',
       message: 'This field is required',
     })
-  }, [form.setError])
+  }, [setError])
   return (
     <RHFFormProvider form={form}>
       <CheckboxField name="agreed" label="I agree to the terms" />

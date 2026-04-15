@@ -43,9 +43,10 @@ export const Default: Story = {
 
 function WithErrorWrapper() {
   const form = useForm({ defaultValues: { bio: '' } })
+  const { setError } = form
   useEffect(() => {
-    form.setError('bio', { type: 'manual', message: 'This field is required' })
-  }, [form.setError])
+    setError('bio', { type: 'manual', message: 'This field is required' })
+  }, [setError])
   return (
     <RHFFormProvider form={form}>
       <TextareaField name="bio" label="Bio" />
