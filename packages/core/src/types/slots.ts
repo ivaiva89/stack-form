@@ -94,6 +94,7 @@ export interface SelectTriggerSlotProps {
   id: string
   name: string
   value: string
+  selectedLabel?: string
   placeholder?: string
   disabled?: boolean
   'aria-describedby'?: string

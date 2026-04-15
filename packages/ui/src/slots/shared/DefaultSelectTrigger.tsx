@@ -6,6 +6,7 @@ export function DefaultSelectTrigger({
   id,
   name,
   value,
+  selectedLabel,
   placeholder,
   disabled,
   className,
@@ -13,6 +14,7 @@ export function DefaultSelectTrigger({
   'aria-invalid': ariaInvalid,
   ...rest
 }: SelectTriggerSlotProps): ReactNode {
+  const displayValue = selectedLabel ?? value
   return (
     <button
       type="button"
@@ -31,8 +33,8 @@ export function DefaultSelectTrigger({
       )}
       {...rest}
     >
-      <span className={cn(!value && 'text-muted-foreground')}>
-        {value || placeholder}
+      <span className={cn(!displayValue && 'text-muted-foreground')}>
+        {displayValue || placeholder}
       </span>
       <svg
         xmlns="http://www.w3.org/2000/svg"

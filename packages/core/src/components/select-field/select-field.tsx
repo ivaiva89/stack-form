@@ -199,6 +199,9 @@ export const SelectField = forwardRef(function SelectField<T = string>(
   }
 
   const valueAsString = String(field.value ?? '')
+  const selectedLabel = options.find(
+    (o) => String(o.value) === valueAsString
+  )?.label
 
   const triggerElement = loading ? (
     <div
@@ -211,6 +214,7 @@ export const SelectField = forwardRef(function SelectField<T = string>(
       id={id}
       name={name}
       value={valueAsString}
+      selectedLabel={selectedLabel}
       placeholder={placeholder}
       disabled={isDisabled}
       aria-describedby={describedBy}
