@@ -3,7 +3,19 @@ title: Using with TanStack Form
 description: Connect StackForm to TanStack Form via TanstackFormProvider
 ---
 
-## Full example
+## Install
+
+```bash
+npm install @stackform/core @stackform/ui @stackform/tanstack @tanstack/react-form
+```
+
+Requires TanStack Form v1.
+
+---
+
+## Quick start
+
+A complete form with three fields, error display, and submission:
 
 ```tsx
 import { useForm } from '@tanstack/react-form'
@@ -38,10 +50,7 @@ export function ContactForm() {
             hint="We'll never share your email."
           />
           <CheckboxField name="terms" label="I agree to the terms and conditions" />
-          <button
-            type="submit"
-            disabled={form.state.isSubmitting}
-          >
+          <button type="submit" disabled={form.state.isSubmitting}>
             {form.state.isSubmitting ? 'Submitting…' : 'Submit'}
           </button>
         </form>
@@ -53,9 +62,9 @@ export function ContactForm() {
 
 ---
 
-## TanstackFormProvider and form.useForm()
+## Provider setup
 
-Pass your TanStack `form` instance directly to `TanstackFormProvider`. The provider subscribes to the form store and injects resolver and state into StackForm context:
+Pass your TanStack `form` instance directly to `TanstackFormProvider`. The provider subscribes to the form store and injects the resolver and form state into StackForm context:
 
 ```tsx
 import { useForm } from '@tanstack/react-form'
@@ -68,18 +77,69 @@ const form = useForm({ defaultValues: { name: '' } })
 </TanstackFormProvider>
 ```
 
-The `form` prop accepts any TanStack `AnyFormApi` — the provider is not tied to a specific schema library.
+`StackFormProvider` must wrap `TanstackFormProvider`. The `form` prop accepts any TanStack `AnyFormApi` — the provider is not tied to a specific schema library.
+
+---
+
+## Error display
+
+Errors surface automatically whenever TanStack Form sets them. Configure validation in your `useForm` call or via per-field `validators` — StackForm displays whatever the form library sets, with no additional wiring.
+
+```tsx
+const form = useForm({
+  defaultValues: { email: '' },
+  validators: {
+    onChange: ({ value }) => {
+      if (!value.email.includes('@')) {
+        return { fields: { email: 'Enter a valid email address' } }
+      }
+    },
+  },
+})
+
+// TextField renders the error automatically when validation fails
+<TextField name="email" label="Email" />
+```
+
+TanStack Form validates on `onChange` by default. To validate only on submit, set `validationTrigger: 'submit'` in your `useForm` options.
+
+---
+
+## Form submission
+
+Call `form.handleSubmit()` inside your `<form>` element's `onSubmit`. Both `preventDefault` and `stopPropagation` are needed when forms are nested. The `onSubmit` callback defined in `useForm` receives the validated values.
+
+```tsx
+const form = useForm({
+  defaultValues: { name: '', email: '' },
+  onSubmit: async ({ value }) => {
+    await saveToApi(value)
+  },
+})
+
+<form
+  onSubmit={(e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    form.handleSubmit()
+  }}
+>
+  {/* fields */}
+  <button type="submit" disabled={form.state.isSubmitting}>
+    {form.state.isSubmitting ? 'Saving…' : 'Save'}
+  </button>
+</form>
+```
 
 ---
 
 ## Validation differences vs React Hook Form
 
-TanStack Form validates fields on `onChange` by default, whereas React Hook Form validates on `submit` (unless `mode: 'onChange'` is set). This affects when errors appear:
-
 | Behaviour | React Hook Form | TanStack Form |
 |-----------|----------------|---------------|
 | Default validation trigger | `submit` | `onChange` |
-| Per-field validators | via `register` rules or resolver | via `validators` option on the field |
+| Per-field validators | via `register` rules or resolver | via `validators` on the field |
 | Async validation | resolver | `asyncValidators` on the field |
+| Submission handler | `handleSubmit(fn)` on `<form>` | `onSubmit` in `useForm` options |
 
-With StackForm, errors surface whenever the underlying form library sets them — the field component does not control the trigger. Configure validation timing in your TanStack `useForm` call or per-field `validators` option, not in StackForm.
+Configure validation timing in your TanStack `useForm` call or per-field `validators` option — not in StackForm.

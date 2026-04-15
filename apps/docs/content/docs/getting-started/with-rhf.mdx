@@ -3,7 +3,17 @@ title: Using with React Hook Form
 description: Connect StackForm to React Hook Form via RHFFormProvider
 ---
 
-## Full example
+## Install
+
+```bash
+npm install @stackform/core @stackform/ui @stackform/rhf react-hook-form
+```
+
+---
+
+## Quick start
+
+A complete contact form with two fields, error display, and submission:
 
 ```tsx
 import { useForm } from 'react-hook-form'
@@ -42,15 +52,59 @@ export function ContactForm() {
 
 ---
 
-## The three required imports
+## Provider setup
 
-| Import | Package | Purpose |
-|--------|---------|---------|
+Two providers are required, in this order:
+
+| Provider | Package | Purpose |
+|----------|---------|---------|
 | `StackFormProvider` | `@stackform/ui` | Provides default slot implementations and shared classNames |
 | `RHFFormProvider` | `@stackform/rhf` | Bridges React Hook Form's `form` instance into StackForm context |
-| Field components (`TextField`, etc.) | `@stackform/ui` | Slot-based field components that read from context |
 
-`StackFormProvider` wraps `RHFFormProvider`. The order matters — `StackFormProvider` must be the outer wrapper.
+`StackFormProvider` must be the outer wrapper. Field components call `useField()` internally — you never wire them to the form instance manually.
+
+---
+
+## Error display
+
+Errors surface automatically. When React Hook Form sets a field error — via `setError`, a resolver, or built-in validation — the field reads it from context and renders the message below the input. No prop wiring required.
+
+```tsx
+const form = useForm<{ email: string }>({
+  defaultValues: { email: '' },
+})
+
+// Trigger an error manually
+form.setError('email', { message: 'Invalid email address' })
+
+// TextField renders it automatically
+<TextField name="email" label="Email" />
+```
+
+To trigger errors on submit, use a resolver (e.g. `@hookform/resolvers/zod`) or React Hook Form's built-in validation rules. StackForm displays whatever the form library sets.
+
+---
+
+## Form submission
+
+Call `form.handleSubmit` on the `<form>` element's `onSubmit`. React Hook Form validates all fields before calling your handler — if validation fails, errors appear in the fields automatically.
+
+```tsx
+const form = useForm<FormValues>({
+  defaultValues: { name: '', email: '' },
+})
+
+async function onSubmit(values: FormValues) {
+  await saveToApi(values)
+}
+
+<form onSubmit={form.handleSubmit(onSubmit)}>
+  {/* fields */}
+  <button type="submit" disabled={form.formState.isSubmitting}>
+    {form.formState.isSubmitting ? 'Saving…' : 'Save'}
+  </button>
+</form>
+```
 
 ---
 
@@ -87,24 +141,6 @@ export function ContactForm() {
 ```
 
 `FormProvider` is memoised inside the hook so it does not re-create on every render.
-
----
-
-## Error display
-
-Errors surface automatically. When React Hook Form sets a field error (via `setError`, `resolver`, or built-in validation), the corresponding field reads it from context and renders the error message below the input — no prop wiring required.
-
-```tsx
-const form = useForm<FormValues>({
-  defaultValues: { email: '' },
-})
-
-// Trigger a manual error
-form.setError('email', { message: 'Invalid email address' })
-
-// TextField renders the error automatically
-<TextField name="email" label="Email" />
-```
 
 ---
 

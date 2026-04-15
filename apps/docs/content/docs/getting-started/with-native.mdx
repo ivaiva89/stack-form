@@ -3,7 +3,19 @@ title: Using with native React state
 description: Connect StackForm to plain React state via NativeFormProvider
 ---
 
-## Full example
+## Install
+
+```bash
+npm install @stackform/core @stackform/ui @stackform/native
+```
+
+No external form library required.
+
+---
+
+## Quick start
+
+A complete form using only React state:
 
 ```tsx
 import { StackFormProvider, TextField } from '@stackform/ui'
@@ -47,19 +59,25 @@ export function ContactForm() {
 
 ---
 
-## When to use the native adapter
+## Provider setup
 
-The native adapter manages form state with plain `useState` — no external form library required. Use it when:
+`useNativeForm` initialises form state with your default values and returns a `NativeFormHandle`. Pass it to `NativeFormProvider`, which injects it into StackForm context.
 
-- Prototyping a form quickly without committing to RHF or TanStack
-- The form is simple enough that a full form library adds unnecessary overhead
-- You need to integrate StackForm into a codebase that already manages state manually
+```tsx
+import { NativeFormProvider, useNativeForm } from '@stackform/native'
 
-For production forms with complex validation, async submission, or field arrays, prefer the RHF or TanStack adapters.
+const form = useNativeForm({ name: '', email: '' })
+
+<NativeFormProvider form={form}>
+  {/* field components here */}
+</NativeFormProvider>
+```
+
+`StackFormProvider` must wrap `NativeFormProvider`.
 
 ---
 
-## Validation
+## Error display
 
 The native adapter does not include a built-in validation runner. Use the `validate` prop to attach a field-level validator — it runs on blur and returns an error string or `undefined`:
 
@@ -73,7 +91,7 @@ The native adapter does not include a built-in validation runner. Use the `valid
 />
 ```
 
-To set or clear errors imperatively (e.g. from an async check), use `form.setFieldError`:
+To set or clear errors imperatively — for example from an async check — use `form.setFieldError`:
 
 ```tsx
 form.setFieldError('email', 'This email is already registered')
@@ -81,3 +99,39 @@ form.setFieldError('email', undefined) // clears the error
 ```
 
 Errors surface automatically in the field's error slot — no additional prop wiring needed.
+
+---
+
+## Form submission
+
+`form.handleSubmit` takes a callback that receives the current field values. It sets `form.isSubmitting` to `true` for the duration of the callback and resolves once it completes or throws.
+
+```tsx
+const onSubmit = (e: React.FormEvent) => {
+  e.preventDefault()
+  form.handleSubmit(async (values) => {
+    await saveToApi(values)
+  })
+}
+
+<form onSubmit={onSubmit}>
+  {/* fields */}
+  <button type="submit" disabled={form.isSubmitting}>
+    {form.isSubmitting ? 'Saving…' : 'Save'}
+  </button>
+</form>
+```
+
+To reset the form after submission, call `form.reset()`.
+
+---
+
+## When to use the native adapter
+
+The native adapter manages form state with plain `useState` — no external form library required. Use it when:
+
+- Prototyping a form quickly without committing to RHF or TanStack
+- The form is simple enough that a full form library adds unnecessary overhead
+- You need to integrate StackForm into a codebase that already manages state manually
+
+For production forms with complex validation, async submission, or field arrays, prefer the RHF or TanStack adapters.
