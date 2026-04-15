@@ -3,27 +3,27 @@ import type { RadioOptionSlotProps } from '@stackform/core'
 import { cn } from '../../lib/cn'
 
 export function DefaultRadioOption<T = string>({
+  id,
+  name,
   value,
   label,
+  checked,
+  onChange,
+  onBlur,
+  description,
   disabled,
   className,
-  ...rest
 }: RadioOptionSlotProps<T>): ReactNode {
-  const inputId = (rest as Record<string, unknown>)['id'] as string | undefined
-  const inputName = (rest as Record<string, unknown>)['name'] as
-    | string
-    | undefined
-  const description = (rest as Record<string, unknown>)['description'] as
-    | string
-    | undefined
-
   return (
     <div className={cn('flex items-start gap-2', className)}>
       <input
         type="radio"
-        id={inputId}
-        name={inputName}
+        id={id}
+        name={name}
         value={String(value)}
+        checked={checked}
+        onChange={onChange}
+        onBlur={onBlur}
         disabled={disabled}
         className={cn(
           'border-input mt-0.5 h-4 w-4 shrink-0 rounded-full border',
@@ -31,22 +31,17 @@ export function DefaultRadioOption<T = string>({
           'disabled:cursor-not-allowed disabled:opacity-50',
           'accent-primary'
         )}
-        {...rest}
       />
       <div className="flex flex-col gap-0.5">
-        {inputId ? (
-          <label
-            htmlFor={inputId}
-            className={cn(
-              'text-sm font-medium leading-none',
-              disabled && 'cursor-not-allowed opacity-50'
-            )}
-          >
-            {label}
-          </label>
-        ) : (
-          <span className="text-sm font-medium leading-none">{label}</span>
-        )}
+        <label
+          htmlFor={id}
+          className={cn(
+            'text-sm font-medium leading-none',
+            disabled && 'cursor-not-allowed opacity-50'
+          )}
+        >
+          {label}
+        </label>
         {description && (
           <p className="text-muted-foreground text-xs">{description}</p>
         )}

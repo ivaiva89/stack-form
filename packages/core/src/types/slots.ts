@@ -138,8 +138,14 @@ export interface SwitchSlotProps {
 }
 
 export interface RadioOptionSlotProps<T = string> {
+  id: string
+  name: string
   value: T
   label: string
+  checked: boolean
+  onChange: () => void
+  onBlur: () => void
+  description?: string
   disabled?: boolean
   className?: string
 }

@@ -97,7 +97,7 @@ describe('RadioGroupField', () => {
     renderField({
       name: 'size',
       label: 'Size',
-      slots: { Option: CustomOption },
+      slots: { RadioOption: CustomOption },
     })
     expect(screen.getByTestId('custom-sm')).toBeInTheDocument()
   })

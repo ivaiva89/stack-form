@@ -88,7 +88,7 @@ describe('CheckboxField', () => {
     renderField({
       name: 'agree',
       label: 'Agree',
-      slots: { Input: CustomCheck },
+      slots: { Checkbox: CustomCheck },
     })
     expect(screen.getByTestId('custom-check')).toBeInTheDocument()
   })

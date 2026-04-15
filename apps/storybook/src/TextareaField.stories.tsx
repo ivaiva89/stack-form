@@ -128,3 +128,42 @@ export const WithSchemaValidation: Story = {
   name: 'WithSchemaValidation',
   render: () => <WithSchemaValidationWrapper />,
 }
+
+export const RowsDefault: Story = {
+  name: 'Rows — default (3)',
+  args: {
+    name: 'bio',
+    label: 'Bio',
+    placeholder: 'Default 3 rows',
+  },
+}
+
+export const RowsTwo: Story = {
+  name: 'Rows — 2',
+  args: {
+    name: 'bio',
+    label: 'Bio',
+    rows: 2,
+    placeholder: '2 rows',
+  },
+}
+
+export const RowsFive: Story = {
+  name: 'Rows — 5',
+  args: {
+    name: 'bio',
+    label: 'Bio',
+    rows: 5,
+    placeholder: '5 rows',
+  },
+}
+
+export const RowsTen: Story = {
+  name: 'Rows — 10',
+  args: {
+    name: 'bio',
+    label: 'Bio',
+    rows: 10,
+    placeholder: '10 rows',
+  },
+}

@@ -92,7 +92,7 @@ describe('SwitchField', () => {
     renderField({
       name: 'notify',
       label: 'Notify',
-      slots: { Input: CustomSwitch },
+      slots: { Switch: CustomSwitch },
     })
     expect(screen.getByTestId('custom-switch')).toBeInTheDocument()
   })

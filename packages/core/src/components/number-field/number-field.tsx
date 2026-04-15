@@ -14,7 +14,7 @@ import { useField } from '../../hooks'
 import { useFieldRenderers } from '../../hooks/use-field-renderers'
 
 export interface NumberFieldSlots extends BaseSlots {
-  Input?: ComponentType<NumberInputSlotProps>
+  NumberInput?: ComponentType<NumberInputSlotProps>
   StepperIncrement?: ComponentType<StepperButtonSlotProps>
   StepperDecrement?: ComponentType<StepperButtonSlotProps>
 }
@@ -35,7 +35,7 @@ export interface NumberFieldProps extends BaseFieldProps<number> {
   slots?: NumberFieldSlots
   slotProps?: BaseFieldProps<number>['slotProps'] &
     Partial<{
-      input: Partial<NumberInputSlotProps>
+      numberInput: Partial<NumberInputSlotProps>
       stepperIncrement: Partial<StepperButtonSlotProps>
       stepperDecrement: Partial<StepperButtonSlotProps>
     }>
@@ -119,7 +119,7 @@ export const NumberField = forwardRef(function NumberField(
   const isIncrementDisabled = isDisabled || (max != null && numericValue >= max)
   const isDecrementDisabled = isDisabled || (min != null && numericValue <= min)
 
-  const InputSlot = resolvedSlots.Input
+  const InputSlot = resolvedSlots.NumberInput
   const IncrementSlot = resolvedSlots.StepperIncrement
   const DecrementSlot = resolvedSlots.StepperDecrement
 
@@ -145,7 +145,7 @@ export const NumberField = forwardRef(function NumberField(
       aria-describedby={describedBy}
       aria-invalid={hasError || undefined}
       className={resolvedClassNames.input}
-      {...(resolvedSlotProps.input as
+      {...(resolvedSlotProps.numberInput as
         | Partial<NumberInputSlotProps>
         | undefined)}
     />

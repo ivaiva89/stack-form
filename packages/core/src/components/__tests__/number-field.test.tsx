@@ -91,7 +91,7 @@ describe('NumberField', () => {
     renderField({
       name: 'qty',
       label: 'Qty',
-      slots: { Input: CustomInput },
+      slots: { NumberInput: CustomInput },
     })
     expect(screen.getByTestId('custom-num')).toBeInTheDocument()
   })

@@ -16,7 +16,7 @@ import { useField } from '../../hooks'
 import { useFieldRenderers } from '../../hooks/use-field-renderers'
 
 export interface TextareaFieldSlots extends BaseSlots {
-  Input?: ComponentType<TextareaSlotProps>
+  Textarea?: ComponentType<TextareaSlotProps>
   Counter?: ComponentType<CounterSlotProps>
 }
 
@@ -36,7 +36,7 @@ export interface TextareaFieldProps extends BaseFieldProps<string> {
   slots?: TextareaFieldSlots
   slotProps?: BaseFieldProps<string>['slotProps'] &
     Partial<{
-      input: Partial<TextareaSlotProps>
+      textarea: Partial<TextareaSlotProps>
       counter: Partial<CounterSlotProps>
     }>
   validate?: ValidateFn<string>
@@ -178,7 +178,7 @@ export const TextareaField = forwardRef(function TextareaField(
     field.runValidation(field.value)
   }
 
-  const InputSlot = resolvedSlots.Input
+  const InputSlot = resolvedSlots.Textarea
   const CounterSlot = resolvedSlots.Counter
 
   const current = typeof field.value === 'string' ? field.value.length : 0
@@ -220,7 +220,9 @@ export const TextareaField = forwardRef(function TextareaField(
       aria-describedby={describedBy}
       aria-invalid={hasError || undefined}
       className={resolvedClassNames.input}
-      {...(resolvedSlotProps.input as Partial<TextareaSlotProps> | undefined)}
+      {...(resolvedSlotProps.textarea as
+        | Partial<TextareaSlotProps>
+        | undefined)}
     />
   ) : (
     <textarea

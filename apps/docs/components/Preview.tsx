@@ -20,7 +20,7 @@ function PreviewShell({ children }: PreviewProps) {
 
 export function Preview({ children }: PreviewProps) {
   return (
-    <div className="my-4 rounded-lg border p-4">
+    <div className="sf-preview my-4 rounded-lg border p-4">
       <PreviewShell>{children}</PreviewShell>
     </div>
   )

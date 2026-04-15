@@ -13,7 +13,7 @@ import { useField } from '../../hooks'
 import { useFieldRenderers } from '../../hooks/use-field-renderers'
 
 export interface CheckboxFieldSlots extends BaseSlots {
-  Input?: ComponentType<CheckboxSlotProps>
+  Checkbox?: ComponentType<CheckboxSlotProps>
 }
 
 export type CheckboxFieldClassNames = BaseClassNames
@@ -25,7 +25,7 @@ export interface CheckboxFieldProps extends BaseFieldProps<boolean> {
   slots?: CheckboxFieldSlots
   slotProps?: BaseFieldProps<boolean>['slotProps'] &
     Partial<{
-      input: Partial<CheckboxSlotProps>
+      checkbox: Partial<CheckboxSlotProps>
     }>
   validate?: ValidateFn<boolean>
 }
@@ -106,7 +106,7 @@ export const CheckboxField = forwardRef(function CheckboxField(
     field.runValidation(field.value)
   }
 
-  const InputSlot = resolvedSlots.Input
+  const InputSlot = resolvedSlots.Checkbox
 
   const ariaChecked: 'true' | 'false' | 'mixed' = indeterminate
     ? 'mixed'
@@ -131,7 +131,9 @@ export const CheckboxField = forwardRef(function CheckboxField(
       aria-describedby={describedBy}
       aria-invalid={hasError || undefined}
       className={resolvedClassNames.input}
-      {...(resolvedSlotProps.input as Partial<CheckboxSlotProps> | undefined)}
+      {...(resolvedSlotProps.checkbox as
+        | Partial<CheckboxSlotProps>
+        | undefined)}
     />
   ) : (
     <input

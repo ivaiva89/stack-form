@@ -9,6 +9,7 @@ import { DefaultLabel } from './slots/shared/DefaultLabel'
 import { DefaultError } from './slots/shared/DefaultError'
 import { DefaultHint } from './slots/shared/DefaultHint'
 import { DefaultInput } from './slots/shared/DefaultInput'
+import { DefaultNumberInput } from './slots/shared/DefaultNumberInput'
 import { DefaultTextarea } from './slots/shared/DefaultTextarea'
 import { DefaultCounter } from './slots/shared/DefaultCounter'
 import { DefaultPrefix } from './slots/shared/DefaultPrefix'
@@ -25,6 +26,7 @@ const DEFAULT_SLOTS: SlotDefaultsContextValue['slots'] = {
   Error: DefaultError,
   Hint: DefaultHint,
   Input: DefaultInput,
+  NumberInput: DefaultNumberInput,
   Textarea: DefaultTextarea,
   Counter: DefaultCounter,
   Prefix: DefaultPrefix,
