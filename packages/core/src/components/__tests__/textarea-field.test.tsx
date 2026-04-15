@@ -86,14 +86,20 @@ describe('TextareaField', () => {
     expect(screen.getByTestId('bio-skeleton')).toBeInTheDocument()
   })
 
-  it('field-level slots.Input is resolved via resolveSlots', () => {
+  it('renders a textarea element, not an input', () => {
+    const { container } = renderField({ name: 'bio', label: 'Bio' })
+    expect(container.querySelector('textarea')).toBeInTheDocument()
+    expect(container.querySelector('input')).not.toBeInTheDocument()
+  })
+
+  it('field-level slots.Textarea is resolved via resolveSlots', () => {
     function CustomTextarea(): ReactNode {
       return <div data-testid="custom-textarea">Custom</div>
     }
     renderField({
       name: 'bio',
       label: 'Bio',
-      slots: { Input: CustomTextarea },
+      slots: { Textarea: CustomTextarea },
     })
     expect(screen.getByTestId('custom-textarea')).toBeInTheDocument()
   })
