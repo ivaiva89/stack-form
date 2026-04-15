@@ -10,9 +10,10 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"],
+      "@stackform/core": ["../../packages/core/src/index.ts"],
+      "@stackform/ui": ["../../packages/ui/src/index.ts"],
+      "@stackform/rhf": ["../../packages/rhf/src/index.ts"]
     },
     "lib": [
       "dom",
