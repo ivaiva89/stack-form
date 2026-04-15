@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Skip hook in CI environments
+[ -n "$CI" ] && exit 0
+
 # Warn if pushing to main with no pending changesets
 branch=$(git symbolic-ref --short HEAD 2>/dev/null)
 
