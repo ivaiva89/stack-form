@@ -20,7 +20,7 @@ export interface RadioOption<T = string> {
 }
 
 export interface RadioGroupFieldSlots extends BaseSlots {
-  Option?: ComponentType<RadioOptionSlotProps>
+  RadioOption?: ComponentType<RadioOptionSlotProps>
 }
 
 export interface RadioGroupFieldClassNames extends BaseClassNames {
@@ -37,7 +37,7 @@ export interface RadioGroupFieldProps<T = string> extends BaseFieldProps<T> {
   slots?: RadioGroupFieldSlots
   slotProps?: BaseFieldProps<T>['slotProps'] &
     Partial<{
-      option: Partial<RadioOptionSlotProps>
+      radioOption: Partial<RadioOptionSlotProps>
     }>
   validate?: ValidateFn<T>
 }
@@ -99,7 +99,7 @@ export const RadioGroupField = forwardRef(function RadioGroupField<T = string>(
     field.runValidation(field.value)
   }
 
-  const OptionSlot = resolvedSlots.Option
+  const OptionSlot = resolvedSlots.RadioOption
 
   const optionsElement = loading ? (
     <div
@@ -117,11 +117,17 @@ export const RadioGroupField = forwardRef(function RadioGroupField<T = string>(
       return OptionSlot ? (
         <OptionSlot
           key={optValue}
+          id={optId}
+          name={name}
           value={opt.value as unknown as string}
           label={opt.label}
+          checked={isSelected}
+          onChange={() => handleChange(opt.value)}
+          onBlur={handleBlur}
+          description={opt.description}
           disabled={isOptDisabled}
           className={resolvedClassNames.option}
-          {...(resolvedSlotProps.option as
+          {...(resolvedSlotProps.radioOption as
             | Partial<RadioOptionSlotProps>
             | undefined)}
         />

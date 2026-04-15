@@ -13,7 +13,7 @@ import { useField } from '../../hooks'
 import { useFieldRenderers } from '../../hooks/use-field-renderers'
 
 export interface SwitchFieldSlots extends BaseSlots {
-  Input?: ComponentType<SwitchSlotProps>
+  Switch?: ComponentType<SwitchSlotProps>
 }
 
 export type SwitchFieldClassNames = BaseClassNames
@@ -27,7 +27,7 @@ export interface SwitchFieldProps extends BaseFieldProps<boolean> {
   slots?: SwitchFieldSlots
   slotProps?: BaseFieldProps<boolean>['slotProps'] &
     Partial<{
-      input: Partial<SwitchSlotProps>
+      switch: Partial<SwitchSlotProps>
     }>
   validate?: ValidateFn<boolean>
 }
@@ -90,7 +90,7 @@ export const SwitchField = forwardRef(function SwitchField(
     field.runValidation(field.value)
   }
 
-  const InputSlot = resolvedSlots.Input
+  const InputSlot = resolvedSlots.Switch
 
   const isChecked = (field.value ?? false) as boolean
   const statusLabel = isChecked ? onLabel : offLabel
@@ -112,7 +112,7 @@ export const SwitchField = forwardRef(function SwitchField(
       aria-describedby={describedBy}
       aria-invalid={hasError || undefined}
       className={resolvedClassNames.input}
-      {...(resolvedSlotProps.input as Partial<SwitchSlotProps> | undefined)}
+      {...(resolvedSlotProps.switch as Partial<SwitchSlotProps> | undefined)}
     />
   ) : (
     <button
