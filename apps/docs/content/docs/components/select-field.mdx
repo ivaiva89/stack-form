@@ -67,6 +67,20 @@ interface SelectOption<T = string> {
 | `EmptyState` | `EmptyStateSlotProps` | Shown when options list is empty |
 | `LoadingState` | `LoadingStateSlotProps` | Shown while `loadOptions` is fetching |
 
+### SelectTriggerSlotProps
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `id` | `string` | ID for the trigger element |
+| `name` | `string` | Field name |
+| `value` | `string` | Raw selected value string |
+| `selectedLabel` | `string \| undefined` | Human-readable label of the selected option. Use this for display — falls back to `value` if the selected option isn't found in the options list. |
+| `placeholder` | `string \| undefined` | Placeholder text shown when nothing is selected |
+| `disabled` | `boolean \| undefined` | Whether the trigger is disabled |
+| `aria-describedby` | `string \| undefined` | IDs of associated error/hint elements |
+| `aria-invalid` | `boolean \| undefined` | Set when the field has an error |
+| `className` | `string \| undefined` | Class name from `classNames.trigger` |
+
 ## classNames
 
 | Key | Applied to |
@@ -152,6 +166,45 @@ Use `loadOptions` to fetch options dynamically. The function is called on mount 
     const res = await fetch(`/api/users?q=${encodeURIComponent(search)}`)
     return res.json()
   }}
+/>
+```
+
+### With custom Trigger slot
+
+Replace the `Trigger` slot to control how the closed select looks. Use `selectedLabel` (not `value`) to display the human-readable option label:
+
+```tsx
+import type { SelectTriggerSlotProps } from '@stackform/core'
+
+function CustomTrigger({
+  selectedLabel,
+  placeholder,
+  disabled,
+  className,
+  ...rest
+}: SelectTriggerSlotProps) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      className={className}
+      {...rest}
+    >
+      <span>{selectedLabel ?? placeholder}</span>
+      ▾
+    </button>
+  )
+}
+
+<SelectField
+  name="country"
+  label="Country"
+  placeholder="Select a country"
+  options={[
+    { value: 'us', label: 'United States' },
+    { value: 'uk', label: 'United Kingdom' },
+  ]}
+  slots={{ Trigger: CustomTrigger }}
 />
 ```
 
