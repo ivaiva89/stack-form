@@ -6,21 +6,28 @@ export function DefaultSelectTrigger({
   id,
   name,
   value,
+  selectedLabel,
   placeholder,
+  isOpen,
+  onToggle,
   disabled,
   className,
   'aria-describedby': ariaDescribedBy,
   'aria-invalid': ariaInvalid,
   ...rest
 }: SelectTriggerSlotProps): ReactNode {
+  const displayValue = selectedLabel ?? value
   return (
     <button
       type="button"
       id={id}
       name={name}
       disabled={disabled}
+      aria-expanded={isOpen}
+      aria-haspopup="listbox"
       aria-describedby={ariaDescribedBy}
       aria-invalid={ariaInvalid}
+      onClick={onToggle}
       className={cn(
         'border-input bg-background ring-offset-background flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm',
         'placeholder:text-muted-foreground',
@@ -31,8 +38,8 @@ export function DefaultSelectTrigger({
       )}
       {...rest}
     >
-      <span className={cn(!value && 'text-muted-foreground')}>
-        {value || placeholder}
+      <span className={cn(!displayValue && 'text-muted-foreground')}>
+        {displayValue || placeholder}
       </span>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -44,7 +51,10 @@ export function DefaultSelectTrigger({
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="shrink-0 opacity-50"
+        className={cn(
+          'shrink-0 opacity-50 transition-transform duration-200',
+          isOpen && 'rotate-180'
+        )}
         aria-hidden="true"
       >
         <path d="m6 9 6 6 6-6" />

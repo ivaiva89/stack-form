@@ -105,11 +105,13 @@ export const SelectField = forwardRef(function SelectField<T = string>(
     field
   )
 
+  const [isOpen, setIsOpen] = useState(false)
   const [asyncOptions, setAsyncOptions] = useState<SelectOption<T>[]>([])
   const [isLoadingOptions, setIsLoadingOptions] = useState(!!loadOptions)
   const [searchTerm, setSearchTerm] = useState('')
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const mountedRef = useRef(true)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     mountedRef.current = true
@@ -120,6 +122,20 @@ export const SelectField = forwardRef(function SelectField<T = string>(
       }
     }
   }, [])
+
+  useEffect(() => {
+    if (!isOpen) return
+    const handleClickOutside = (e: MouseEvent): void => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isOpen])
 
   useEffect(() => {
     if (!loadOptions) return
@@ -182,6 +198,18 @@ export const SelectField = forwardRef(function SelectField<T = string>(
     field.runValidation(field.value)
   }
 
+  const handleToggle = (): void => {
+    setIsOpen((prev) => !prev)
+  }
+
+  const handleOptionSelect = (value: T): void => {
+    field.onChange(value)
+    onValueChange?.(value)
+    setIsOpen(false)
+    field.onBlur()
+    field.runValidation(value)
+  }
+
   const TriggerSlot = resolvedSlots.Trigger
   const OptionSlot = resolvedSlots.Option
   const EmptySlot = resolvedSlots.EmptyState
@@ -199,96 +227,40 @@ export const SelectField = forwardRef(function SelectField<T = string>(
   }
 
   const valueAsString = String(field.value ?? '')
-
-  const triggerElement = loading ? (
-    <div
-      className={resolvedClassNames.trigger}
-      aria-busy="true"
-      data-testid={`${id}-skeleton`}
-    />
-  ) : TriggerSlot ? (
-    <TriggerSlot
-      id={id}
-      name={name}
-      value={valueAsString}
-      placeholder={placeholder}
-      disabled={isDisabled}
-      aria-describedby={describedBy}
-      aria-invalid={hasError || undefined}
-      className={resolvedClassNames.trigger}
-      {...(resolvedSlotProps.trigger as
-        | Partial<SelectTriggerSlotProps>
-        | undefined)}
-    />
-  ) : (
-    <select
-      ref={ref}
-      id={id}
-      name={name}
-      value={valueAsString}
-      onChange={(e) => handleChange(e.target.value as unknown as T)}
-      onBlur={handleBlur}
-      disabled={isDisabled}
-      required={required}
-      aria-describedby={describedBy}
-      aria-invalid={hasError || undefined}
-      className={resolvedClassNames.trigger}
-    >
-      {placeholder != null && (
-        <option value="" disabled>
-          {placeholder}
-        </option>
-      )}
-      {Array.from(grouped.entries()).map(([group, groupOptions]) =>
-        group != null ? (
-          <optgroup key={group} label={group}>
-            {groupOptions.map((opt) => (
-              <option
-                key={String(opt.value)}
-                value={String(opt.value)}
-                disabled={opt.disabled}
-              >
-                {opt.label}
-              </option>
-            ))}
-          </optgroup>
-        ) : (
-          groupOptions.map((opt) => (
-            <option
-              key={String(opt.value)}
-              value={String(opt.value)}
-              disabled={opt.disabled}
-            >
-              {opt.label}
-            </option>
-          ))
-        )
-      )}
-    </select>
-  )
+  const selectedLabel = options.find(
+    (o) => String(o.value) === valueAsString
+  )?.label
 
   const renderOption = (opt: SelectOption<T>): ReactNode => {
     const optionValue = String(opt.value)
+    const isSelected = optionValue === valueAsString
+    const onSelect = (): void => {
+      if (!opt.disabled) handleOptionSelect(opt.value)
+    }
     return OptionSlot ? (
       <OptionSlot
         key={optionValue}
         value={opt.value as unknown as string}
         label={opt.label}
         disabled={opt.disabled}
+        aria-selected={isSelected}
+        onSelect={onSelect}
         className={resolvedClassNames.option}
         {...(resolvedSlotProps.option as
           | Partial<SelectOptionSlotProps>
           | undefined)}
       />
     ) : (
-      <option
+      <div
         key={optionValue}
-        value={optionValue}
-        disabled={opt.disabled}
+        role="option"
+        aria-selected={isSelected}
+        aria-disabled={opt.disabled}
+        onClick={onSelect}
         className={resolvedClassNames.option}
       >
         {opt.label}
-      </option>
+      </div>
     )
   }
 
@@ -348,12 +320,102 @@ export const SelectField = forwardRef(function SelectField<T = string>(
       />
     ) : null
 
+  if (loading) {
+    return renderWrapper(
+      <>
+        {labelElement}
+        <div
+          className={resolvedClassNames.trigger}
+          aria-busy="true"
+          data-testid={`${id}-skeleton`}
+        />
+        {validatingIndicator}
+        {errorElement ?? hintElement}
+      </>
+    )
+  }
+
+  if (TriggerSlot) {
+    return renderWrapper(
+      <>
+        {labelElement}
+        <div ref={containerRef} style={{ position: 'relative' }}>
+          <TriggerSlot
+            id={id}
+            name={name}
+            value={valueAsString}
+            selectedLabel={selectedLabel}
+            placeholder={placeholder}
+            isOpen={isOpen}
+            onToggle={handleToggle}
+            disabled={isDisabled}
+            aria-describedby={describedBy}
+            aria-invalid={hasError || undefined}
+            className={resolvedClassNames.trigger}
+            {...(resolvedSlotProps.trigger as
+              | Partial<SelectTriggerSlotProps>
+              | undefined)}
+          />
+          {isOpen && (
+            <>
+              {searchElement}
+              {listContent}
+            </>
+          )}
+        </div>
+        {validatingIndicator}
+        {errorElement ?? hintElement}
+      </>
+    )
+  }
+
   return renderWrapper(
     <>
       {labelElement}
-      {triggerElement}
-      {searchElement}
-      {!loading && listContent}
+      <select
+        ref={ref}
+        id={id}
+        name={name}
+        value={valueAsString}
+        onChange={(e) => handleChange(e.target.value as unknown as T)}
+        onBlur={handleBlur}
+        disabled={isDisabled}
+        required={required}
+        aria-describedby={describedBy}
+        aria-invalid={hasError || undefined}
+        className={resolvedClassNames.trigger}
+      >
+        {placeholder != null && (
+          <option value="" disabled>
+            {placeholder}
+          </option>
+        )}
+        {Array.from(grouped.entries()).map(([group, groupOptions]) =>
+          group != null ? (
+            <optgroup key={group} label={group}>
+              {groupOptions.map((opt) => (
+                <option
+                  key={String(opt.value)}
+                  value={String(opt.value)}
+                  disabled={opt.disabled}
+                >
+                  {opt.label}
+                </option>
+              ))}
+            </optgroup>
+          ) : (
+            groupOptions.map((opt) => (
+              <option
+                key={String(opt.value)}
+                value={String(opt.value)}
+                disabled={opt.disabled}
+              >
+                {opt.label}
+              </option>
+            ))
+          )
+        )}
+      </select>
       {validatingIndicator}
       {errorElement ?? hintElement}
     </>

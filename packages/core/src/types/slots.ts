@@ -94,7 +94,10 @@ export interface SelectTriggerSlotProps {
   id: string
   name: string
   value: string
+  selectedLabel?: string
   placeholder?: string
+  isOpen: boolean
+  onToggle: () => void
   disabled?: boolean
   'aria-describedby'?: string
   'aria-invalid'?: boolean
@@ -105,6 +108,8 @@ export interface SelectOptionSlotProps<T = string> {
   value: T
   label: string
   disabled?: boolean
+  'aria-selected'?: boolean
+  onSelect: () => void
   className?: string
 }
 

@@ -1,9 +1,10 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import type { ReactNode } from 'react'
+import type { ReactNode, ComponentType } from 'react'
 import { SelectField } from '../select-field'
 import type { SelectOption } from '../select-field'
+import type { SelectTriggerSlotProps } from '../../types'
 import { TestFormProvider } from './test-harness'
 
 const OPTIONS: SelectOption<string>[] = [
@@ -139,5 +140,30 @@ describe('SelectField', () => {
     expect(screen.getAllByText('Alpha').length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText('Beta').length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText('Charlie').length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('passes selectedLabel (not raw value) to custom Trigger slot', () => {
+    const SpyTrigger: ComponentType<SelectTriggerSlotProps> = ({
+      selectedLabel,
+      value,
+    }) => (
+      <button type="button" data-testid="spy-trigger">
+        {selectedLabel ?? value}
+      </button>
+    )
+
+    const name = 'color'
+    render(
+      <TestFormProvider fields={{ [name]: { value: 'b' } }}>
+        <SelectField
+          name={name}
+          options={OPTIONS}
+          slots={{ Trigger: SpyTrigger }}
+        />
+      </TestFormProvider>
+    )
+
+    expect(screen.getByTestId('spy-trigger')).toHaveTextContent('Beta')
+    expect(screen.getByTestId('spy-trigger')).not.toHaveTextContent('b')
   })
 })

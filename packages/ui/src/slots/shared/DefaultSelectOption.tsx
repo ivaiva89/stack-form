@@ -2,15 +2,19 @@ import type { ReactNode } from 'react'
 import type { SelectOptionSlotProps } from '@stackform/core'
 import { cn } from '../../lib/cn'
 
-export function DefaultSelectOption<T = string>(
-  props: SelectOptionSlotProps<T>
-): ReactNode {
-  const { label, disabled, className } = props
-  const ariaSelected =
-    (props as unknown as Record<string, unknown>)['aria-selected'] === true
-
+export function DefaultSelectOption<T = string>({
+  label,
+  disabled,
+  'aria-selected': ariaSelected,
+  onSelect,
+  className,
+}: SelectOptionSlotProps<T>): ReactNode {
   return (
     <div
+      role="option"
+      aria-selected={ariaSelected}
+      aria-disabled={disabled}
+      onClick={disabled ? undefined : onSelect}
       className={cn(
         'relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm',
         'hover:bg-accent hover:text-accent-foreground',
