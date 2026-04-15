@@ -15,7 +15,8 @@
     "test:watch": "vitest",
     "clean": "pnpm -r exec rm -rf dist node_modules",
     "prepare": "husky",
-    "size": "size-limit"
+    "size": "size-limit",
+    "changeset:add": "changeset add"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
