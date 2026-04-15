@@ -1,6 +1,6 @@
 # @stackform/core
 
-## 2.0.0
+## 1.0.1
 
 ### Patch Changes
 
@@ -12,9 +12,6 @@
   - `SelectField` separates the custom trigger path from the native `<select>` path — the listbox was previously rendered even for native select (invalid HTML)
   - `DefaultSelectTrigger` wires `onClick={onToggle}`, adds `aria-expanded`/`aria-haspopup`, and rotates the chevron when open
   - `DefaultSelectOption` wires `onClick={onSelect}` and adds `role="option"` — options were previously unclickable
-
-- 78ca128: Fix slot key mismatches in CheckboxField, SwitchField, RadioGroupField, NumberField, and TextareaField that caused wrong default slot components to be resolved from StackFormProvider; fix RadioGroupField selecting all options simultaneously due to missing controlled props on RadioOptionSlotProps; add DefaultNumberInput slot component to @stackform/ui
-- e9ada87: Fix TextareaField rendering as a single-line input when used with StackFormProvider
 
 ## 1.0.0
 

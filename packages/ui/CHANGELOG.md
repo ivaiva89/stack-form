@@ -1,10 +1,6 @@
 # @stackform/ui
 
-## 2.0.0
-
-### Minor Changes
-
-- 78ca128: Fix slot key mismatches in CheckboxField, SwitchField, RadioGroupField, NumberField, and TextareaField that caused wrong default slot components to be resolved from StackFormProvider; fix RadioGroupField selecting all options simultaneously due to missing controlled props on RadioOptionSlotProps; add DefaultNumberInput slot component to @stackform/ui
+## 1.0.1
 
 ### Patch Changes
 
@@ -18,9 +14,7 @@
   - `DefaultSelectOption` wires `onClick={onSelect}` and adds `role="option"` — options were previously unclickable
 
 - Updated dependencies [e34dfd4]
-- Updated dependencies [78ca128]
-- Updated dependencies [e9ada87]
-  - @stackform/core@2.0.0
+  - @stackform/core@1.0.1
 
 ## 1.0.0
 
