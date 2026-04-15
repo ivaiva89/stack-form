@@ -1,6 +1,6 @@
 {
   "name": "@stackform/zod",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Zod validation integration for StackForm",
   "license": "MIT",
   "repository": {
