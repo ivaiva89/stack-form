@@ -1,5 +1,16 @@
 # @stackform/example-with-tanstack
 
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies [e34dfd4]
+- Updated dependencies [78ca128]
+- Updated dependencies [e9ada87]
+  - @stackform/core@2.0.0
+  - @stackform/ui@2.0.0
+  - @stackform/tanstack@2.0.0
+
 ## 0.1.0
 
 ### Minor Changes
