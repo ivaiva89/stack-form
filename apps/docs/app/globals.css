@@ -2,18 +2,51 @@
 @import 'fumadocs-ui/style.css';
 @source '../../../packages/ui/src/**/*.tsx';
 
-@theme {
-  --color-background: hsl(0 0% 100%);
-  --color-foreground: hsl(240 10% 3.9%);
-  --color-muted: hsl(240 4.8% 95.9%);
-  --color-muted-foreground: hsl(240 3.8% 46.1%);
-  --color-border: hsl(240 5.9% 90%);
-  --color-input: hsl(240 5.9% 90%);
-  --color-ring: hsl(240 5.9% 10%);
-  --color-primary: hsl(240 5.9% 10%);
-  --color-primary-foreground: hsl(0 0% 98%);
-  --color-destructive: hsl(0 84.2% 60.2%);
-  --color-accent: hsl(240 4.8% 95.9%);
-  --color-accent-foreground: hsl(240 5.9% 10%);
+/* Map Tailwind v4 color utilities to scoped SF variables.
+   Values are only defined inside .sf-preview — no global color pollution. */
+@theme inline {
+  --color-background: var(--sf-background);
+  --color-foreground: var(--sf-foreground);
+  --color-muted: var(--sf-muted);
+  --color-muted-foreground: var(--sf-muted-foreground);
+  --color-border: var(--sf-border);
+  --color-input: var(--sf-input);
+  --color-ring: var(--sf-ring);
+  --color-primary: var(--sf-primary);
+  --color-primary-foreground: var(--sf-primary-foreground);
+  --color-destructive: var(--sf-destructive);
+  --color-accent: var(--sf-accent);
+  --color-accent-foreground: var(--sf-accent-foreground);
+}
+
+.sf-preview {
+  background-color: var(--sf-background);
+  --sf-background: hsl(0 0% 100%);
+  --sf-foreground: hsl(240 10% 3.9%);
+  --sf-muted: hsl(240 4.8% 95.9%);
+  --sf-muted-foreground: hsl(240 3.8% 46.1%);
+  --sf-border: hsl(240 5.9% 90%);
+  --sf-input: hsl(240 5.9% 90%);
+  --sf-ring: hsl(240 5.9% 10%);
+  --sf-primary: hsl(240 5.9% 10%);
+  --sf-primary-foreground: hsl(0 0% 98%);
+  --sf-destructive: hsl(0 84.2% 60.2%);
+  --sf-accent: hsl(240 4.8% 95.9%);
+  --sf-accent-foreground: hsl(240 5.9% 10%);
   --radius: 0.5rem;
+}
+
+.dark .sf-preview {
+  --sf-background: hsl(240 10% 3.9%);
+  --sf-foreground: hsl(0 0% 98%);
+  --sf-muted: hsl(240 3.7% 15.9%);
+  --sf-muted-foreground: hsl(240 5% 64.9%);
+  --sf-border: hsl(240 3.7% 15.9%);
+  --sf-input: hsl(240 3.7% 15.9%);
+  --sf-ring: hsl(240 4.9% 83.9%);
+  --sf-primary: hsl(0 0% 98%);
+  --sf-primary-foreground: hsl(240 5.9% 10%);
+  --sf-destructive: hsl(0 62.8% 30.6%);
+  --sf-accent: hsl(240 3.7% 15.9%);
+  --sf-accent-foreground: hsl(0 0% 98%);
 }

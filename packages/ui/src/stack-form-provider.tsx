@@ -19,6 +19,7 @@ import { DefaultSelectOption } from './slots/shared/DefaultSelectOption'
 import { DefaultCheckbox } from './slots/shared/DefaultCheckbox'
 import { DefaultSwitch } from './slots/shared/DefaultSwitch'
 import { DefaultRadioOption } from './slots/shared/DefaultRadioOption'
+import { DefaultSelectDropdown } from './slots/shared/DefaultSelectDropdown'
 
 const DEFAULT_SLOTS: SlotDefaultsContextValue['slots'] = {
   Wrapper: DefaultWrapper,
@@ -36,6 +37,7 @@ const DEFAULT_SLOTS: SlotDefaultsContextValue['slots'] = {
   Checkbox: DefaultCheckbox,
   Switch: DefaultSwitch,
   RadioOption: DefaultRadioOption,
+  Dropdown: DefaultSelectDropdown,
 }
 
 export interface StackFormProviderProps {

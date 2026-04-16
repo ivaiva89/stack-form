@@ -20,6 +20,7 @@ export { DefaultSelectOption } from './slots/shared/DefaultSelectOption'
 export { DefaultCheckbox } from './slots/shared/DefaultCheckbox'
 export { DefaultSwitch } from './slots/shared/DefaultSwitch'
 export { DefaultRadioOption } from './slots/shared/DefaultRadioOption'
+export { DefaultSelectDropdown } from './slots/shared/DefaultSelectDropdown'
 
 // Re-export core types for consumer convenience
 export type {
@@ -45,6 +46,7 @@ export type {
   StepperButtonSlotProps,
   EmptyStateSlotProps,
   LoadingStateSlotProps,
+  DropdownSlotProps,
   SlotComponentMap,
   BaseFieldProps,
   BaseSlots,

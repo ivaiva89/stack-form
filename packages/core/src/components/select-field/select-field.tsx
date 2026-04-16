@@ -10,6 +10,7 @@ import type {
   SelectOptionSlotProps,
   EmptyStateSlotProps,
   LoadingStateSlotProps,
+  DropdownSlotProps,
 } from '../../types'
 import type { ValidateFn } from '../../hooks'
 import { useField } from '../../hooks'
@@ -27,6 +28,7 @@ export interface SelectFieldSlots extends BaseSlots {
   Option?: ComponentType<SelectOptionSlotProps>
   EmptyState?: ComponentType<EmptyStateSlotProps>
   LoadingState?: ComponentType<LoadingStateSlotProps>
+  Dropdown?: ComponentType<DropdownSlotProps>
 }
 
 export interface SelectFieldClassNames extends BaseClassNames {
@@ -36,6 +38,7 @@ export interface SelectFieldClassNames extends BaseClassNames {
   emptyState?: string
   loadingState?: string
   listbox?: string
+  dropdown?: string
 }
 
 export interface SelectFieldProps<T = string> extends BaseFieldProps<T> {
@@ -214,6 +217,7 @@ export const SelectField = forwardRef(function SelectField<T = string>(
   const OptionSlot = resolvedSlots.Option
   const EmptySlot = resolvedSlots.EmptyState
   const LoadingSlot = resolvedSlots.LoadingState
+  const DropdownSlot = resolvedSlots.Dropdown
 
   const grouped = new Map<string | undefined, SelectOption<T>[]>()
   for (const opt of options) {
@@ -357,10 +361,28 @@ export const SelectField = forwardRef(function SelectField<T = string>(
               | undefined)}
           />
           {isOpen && (
-            <>
-              {searchElement}
-              {listContent}
-            </>
+            <div
+              style={{
+                position: 'absolute',
+                top: '100%',
+                left: 0,
+                right: 0,
+                marginTop: 4,
+                zIndex: 50,
+              }}
+            >
+              {DropdownSlot ? (
+                <DropdownSlot className={resolvedClassNames.dropdown}>
+                  {searchElement}
+                  {listContent}
+                </DropdownSlot>
+              ) : (
+                <>
+                  {searchElement}
+                  {listContent}
+                </>
+              )}
+            </div>
           )}
         </div>
         {validatingIndicator}

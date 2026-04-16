@@ -164,6 +164,11 @@ export interface LoadingStateSlotProps {
   className?: string
 }
 
+export interface DropdownSlotProps {
+  children: React.ReactNode
+  className?: string
+}
+
 export interface SlotComponentMap {
   Wrapper: ComponentType<WrapperSlotProps>
   Label: ComponentType<LabelSlotProps>
@@ -184,4 +189,5 @@ export interface SlotComponentMap {
   StepperDecrement: ComponentType<StepperButtonSlotProps>
   EmptyState: ComponentType<EmptyStateSlotProps>
   LoadingState: ComponentType<LoadingStateSlotProps>
+  Dropdown: ComponentType<DropdownSlotProps>
 }
