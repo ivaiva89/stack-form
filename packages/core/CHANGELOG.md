@@ -1,5 +1,18 @@
 # @stackform/core
 
+## 1.0.1
+
+### Patch Changes
+
+- e34dfd4: Fix SelectField trigger displaying raw value instead of label, and fix broken open/close behavior when using custom trigger slots
+  - `SelectTriggerSlotProps` now includes `selectedLabel?: string` (the human-readable label of the selected option), `isOpen: boolean`, and `onToggle: () => void`
+  - `SelectOptionSlotProps` now includes `onSelect: () => void` and `'aria-selected'?: boolean` as a proper typed prop
+  - `SelectField` renders the listbox conditionally based on `isOpen` state — it was always visible before
+  - `SelectField` adds click-outside handling to close the dropdown
+  - `SelectField` separates the custom trigger path from the native `<select>` path — the listbox was previously rendered even for native select (invalid HTML)
+  - `DefaultSelectTrigger` wires `onClick={onToggle}`, adds `aria-expanded`/`aria-haspopup`, and rotates the chevron when open
+  - `DefaultSelectOption` wires `onClick={onSelect}` and adds `role="option"` — options were previously unclickable
+
 ## 1.0.0
 
 ### Minor Changes

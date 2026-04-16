@@ -1,6 +1,6 @@
 {
   "name": "@stackform/core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Core context, hooks, and slot resolution for StackForm",
   "license": "MIT",
   "repository": {

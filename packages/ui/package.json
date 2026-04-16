@@ -1,6 +1,6 @@
 {
   "name": "@stackform/ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "shadcn-based default slot implementations for StackForm",
   "license": "MIT",
   "repository": {

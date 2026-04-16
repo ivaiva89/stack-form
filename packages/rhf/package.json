@@ -1,6 +1,6 @@
 {
   "name": "@stackform/rhf",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React Hook Form adapter for StackForm",
   "license": "MIT",
   "repository": {

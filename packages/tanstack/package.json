@@ -1,6 +1,6 @@
 {
   "name": "@stackform/tanstack",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TanStack Form adapter for StackForm",
   "license": "MIT",
   "repository": {

@@ -1,5 +1,12 @@
 # @stackform/native
 
+## 1.0.1
+
+### Patch Changes
+
+- Updated dependencies [e34dfd4]
+  - @stackform/core@1.0.1
+
 ## 1.0.0
 
 ### Minor Changes
