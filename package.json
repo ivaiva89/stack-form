@@ -2,6 +2,7 @@
   "name": "stackform-monorepo",
   "private": true,
   "packageManager": "pnpm@9.15.4",
+  "homepage": "https://stack-form-docs.vercel.app/docs/getting-started",
   "engines": {
     "node": ">=18"
   },
