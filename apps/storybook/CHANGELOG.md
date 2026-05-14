@@ -1,5 +1,18 @@
 # @stackform/storybook
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies [bda8110]
+- Updated dependencies [63ca5a8]
+- Updated dependencies [fd82b06]
+- Updated dependencies [8b37e7a]
+  - @stackform/rhf@1.1.0
+  - @stackform/core@1.1.0
+  - @stackform/ui@1.1.0
+  - @stackform/zod@1.1.0
+
 ## 0.1.1
 
 ### Patch Changes

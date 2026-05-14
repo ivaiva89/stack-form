@@ -1,6 +1,6 @@
 {
   "name": "@stackform/valibot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Valibot validation integration for StackForm",
   "license": "MIT",
   "repository": {
