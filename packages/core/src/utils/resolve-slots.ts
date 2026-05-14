@@ -2,7 +2,7 @@ import type { ComponentType } from 'react'
 import { clsx } from 'clsx'
 
 export function resolveSlots<
-  S extends Record<string, ComponentType<never> | undefined>,
+  S extends Record<string, ComponentType<object> | undefined>,
 >(coreDefaults: S, providerSlots?: Partial<S>, fieldSlots?: Partial<S>): S {
   const allKeys = new Set<keyof S>([
     ...(Object.keys(coreDefaults) as Array<keyof S>),
