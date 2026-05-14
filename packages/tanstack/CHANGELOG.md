@@ -1,5 +1,11 @@
 # @stackform/tanstack
 
+## 1.1.0
+
+### Minor Changes
+
+- 479deff: Export public `useTanstackField` hook. Pair with `TanstackFormProvider` to drive any StackForm field with TanStack Form as the underlying state library.
+
 ## 1.0.1
 
 ### Patch Changes

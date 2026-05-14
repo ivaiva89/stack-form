@@ -1,5 +1,15 @@
 # @stackform/core
 
+## 1.1.0
+
+### Minor Changes
+
+- fd82b06: Fix SelectField dropdown opening as an overlay instead of expanding inline; add Dropdown slot for visual customization of the dropdown container
+
+### Patch Changes
+
+- 63ca5a8: Widen the `resolveSlots` generic constraint from `ComponentType<never>` to `ComponentType<object>` so custom slot implementations with any prop shape type-check correctly.
+
 ## 1.0.1
 
 ### Patch Changes
