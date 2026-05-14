@@ -1,0 +1,45 @@
+name: Feature request
+description: Request a new feature or API change
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Have an idea?** Consider opening a [Discussion](https://github.com/ivakobalava/stack-form/discussions/new?category=ideas) first — it's a better place for open-ended proposals. Use this template if you have a concrete, well-defined request.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the pain point. What are you trying to do that StackForm doesn't support today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What would you like to see? Include API sketch if you have one.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What workarounds are you using today?
+
+  - type: dropdown
+    id: tier
+    attributes:
+      label: Which tier does this fall under?
+      options:
+        - Tier 1 — core field component
+        - Tier 2 — complex field component
+        - Adapter / validation
+        - CLI
+        - Developer experience / tooling
+        - Documentation
+        - Other
+    validations:
+      required: true
