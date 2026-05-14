@@ -23,6 +23,7 @@ export type {
   StepperButtonSlotProps,
   EmptyStateSlotProps,
   LoadingStateSlotProps,
+  DropdownSlotProps,
   SlotComponentMap,
   BaseFieldProps,
   BaseSlots,

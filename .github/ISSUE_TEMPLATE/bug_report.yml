@@ -1,0 +1,70 @@
+name: Bug report
+description: Report a bug in StackForm
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before opening, please search existing issues to avoid duplicates.
+
+  - type: input
+    id: package
+    attributes:
+      label: Package and version
+      description: Which package is affected?
+      placeholder: "@stackform/core@1.0.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: adapter
+    attributes:
+      label: Adapter
+      options:
+        - "@stackform/rhf"
+        - "@stackform/tanstack"
+        - "@stackform/native"
+        - Not adapter-specific
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+
+  - type: input
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Link to a CodeSandbox, StackBlitz, or GitHub repo that reproduces the issue.
+      placeholder: "https://codesandbox.io/..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Reproduction steps
+      description: If you can't provide a link, paste a minimal code snippet here.
+      render: tsx
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: React version, Next.js version (if applicable), browser.
+      placeholder: |
+        React: 18.3.0
+        Next.js: 14.2.0
+        Browser: Chrome 124

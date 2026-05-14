@@ -18,7 +18,7 @@ import {
 } from '../utils'
 import { useStackFormContext, useSlotDefaults } from '../context'
 
-type SlotRecord = Record<string, ComponentType<never> | undefined>
+type SlotRecord = Record<string, ComponentType<object> | undefined>
 type ClassRecord = Record<string, string | undefined>
 type SlotPropsRecord = Record<string, Record<string, unknown> | undefined>
 

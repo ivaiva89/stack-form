@@ -36,7 +36,7 @@
   "peerDependencies": {
     "react": ">=18",
     "react-dom": ">=18",
-    "@stackform/core": "workspace:*"
+    "@stackform/core": "^1.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.14",

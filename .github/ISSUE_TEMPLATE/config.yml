@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Feature idea or open-ended proposal
+    url: https://github.com/ivaiva89/stack-form/discussions/new?category=ideas
+    about: Use Discussions for ideas you'd like to explore before they become a concrete issue.
+  - name: Question or help
+    url: https://github.com/ivaiva89/stack-form/discussions/new?category=q-a
+    about: Ask questions and get help from the community.

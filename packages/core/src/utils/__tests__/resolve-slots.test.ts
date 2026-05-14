@@ -3,9 +3,9 @@ import { describe, it, expect } from 'vitest'
 import { resolveSlots, resolveSlotProps, resolveClassNames } from '../../index'
 import type { ComponentType } from 'react'
 
-const CompA: ComponentType<never> = () => null
-const CompB: ComponentType<never> = () => null
-const CompC: ComponentType<never> = () => null
+const CompA: ComponentType<object> = () => null
+const CompB: ComponentType<object> = () => null
+const CompC: ComponentType<object> = () => null
 
 describe('resolveSlots', () => {
   it('returns core default when no overrides', () => {

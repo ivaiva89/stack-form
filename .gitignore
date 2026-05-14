@@ -36,3 +36,6 @@ coverage
 
 # Project instructions
 CLAUDE.md
+.playwright-mcp
+.claude
+BACKLOG.md
