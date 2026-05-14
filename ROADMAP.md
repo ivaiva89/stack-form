@@ -2,9 +2,9 @@
 
 StackForm follows **milestone-based releases** — versions ship when a milestone's acceptance criteria are fully met, not on a fixed calendar schedule. Alpha releases are cut freely during development for dogfooding and early feedback.
 
-## Current milestone — v1.0.0 (Stable)
+## Current milestone — v1.1.0 (First stable)
 
-**Goal:** A production-ready, stable release of all Tier 1 components. API is locked. No breaking changes without a deprecation cycle.
+**Goal:** First production-ready release on the `latest` npm tag. All Tier 1 components, three adapters, two schema integrations, slot system locked. No breaking changes without a deprecation cycle. (The 1.0.x line lives on the `alpha` tag and is not coming to `latest` — v1.1.0 is the first stable cut.)
 
 ### What's included
 
@@ -14,20 +14,27 @@ StackForm follows **milestone-based releases** — versions ship when a mileston
 - ✅ Slot-based customization system (3-layer: field → provider → core)
 - ✅ `@stackform/ui` — shadcn-based default slot components
 - ✅ Docs site at [stack-form-docs.vercel.app](https://stack-form-docs.vercel.app)
-- 🔄 TypeScript type fixes (`resolveSlots` constraint)
-- 🔄 `useTanstackField` public hook
-- 🔄 `CONTRIBUTING.md`, `GOVERNANCE.md`, release process documented
+- ✅ TypeScript type fixes (`resolveSlots` constraint)
+- ✅ `useTanstackField` public hook
+- ✅ Typed `field.name()` helper on `useRHFForm`
+- ✅ Per-package READMEs, `CONTRIBUTING.md`, release process documented
 - 🔄 Dogfooding validated on real projects
 
-### Install (alpha)
+### Install (alpha — current track)
 
 ```bash
 npm install @stackform/core@alpha @stackform/ui@alpha @stackform/rhf@alpha
 ```
 
+After v1.1.0 ships, install without a tag:
+
+```bash
+npm install @stackform/core @stackform/ui @stackform/rhf
+```
+
 ---
 
-## Next — v1.1.0
+## Next — v1.2.0
 
 **Goal:** Cover the form patterns B2B SaaS apps need most — field arrays, dependent fields, and the first Tier 2 components.
 
@@ -41,7 +48,7 @@ npm install @stackform/core@alpha @stackform/ui@alpha @stackform/rhf@alpha
 
 ---
 
-## v1.2.0
+## v1.3.0
 
 **Goal:** CLI and remaining Tier 2 components.
 
@@ -54,7 +61,7 @@ npm install @stackform/core@alpha @stackform/ui@alpha @stackform/rhf@alpha
 
 ---
 
-## Post-v1.0 backlog
+## Post-v1.x backlog
 
 These are planned but not assigned to a milestone yet.
 
@@ -77,4 +84,4 @@ These are planned but not assigned to a milestone yet.
 4. GitHub Release is created with the changelog
 5. This roadmap is updated
 
-Have a feature idea? Open a [Discussion](https://github.com/ivakobalava/stack-form/discussions/new?category=ideas) — that's where proposals are evaluated before becoming issues.
+Have a feature idea? Open a [Discussion](https://github.com/ivaiva89/stack-form/discussions/new?category=ideas) — that's where proposals are evaluated before becoming issues.

@@ -16,7 +16,7 @@ Thanks for your interest in contributing. This document covers everything you ne
 
 ## Reporting bugs
 
-Open a [bug report issue](https://github.com/ivakobalava/stack-form/issues/new?template=bug_report.yml). Include:
+Open a [bug report issue](https://github.com/ivaiva89/stack-form/issues/new?template=bug_report.yml). Include:
 
 - The package and version affected (`@stackform/core@1.0.0`)
 - A minimal reproduction — a CodeSandbox or StackBlitz link is ideal
@@ -28,7 +28,7 @@ Before opening, search existing issues to avoid duplicates.
 
 ## Proposing features
 
-Open a [GitHub Discussion](https://github.com/ivakobalava/stack-form/discussions/new?category=ideas) in the **Ideas** category first. Describe the problem you're solving, not just the solution. If the feature is accepted, a tracking issue will be created and linked to a milestone.
+Open a [GitHub Discussion](https://github.com/ivaiva89/stack-form/discussions/new?category=ideas) in the **Ideas** category first. Describe the problem you're solving, not just the solution. If the feature is accepted, a tracking issue will be created and linked to a milestone.
 
 Don't open a feature request issue directly — proposals go through Discussions so they can be evaluated before committing to implementation.
 
@@ -57,7 +57,7 @@ PRs require CI to pass (typecheck + lint + test + build) before merge.
 
 ```bash
 # Clone and install
-git clone https://github.com/ivakobalava/stack-form.git
+git clone https://github.com/ivaiva89/stack-form.git
 cd stack-form
 pnpm install
 
